@@ -1,0 +1,10 @@
+project_id = "k12learn2gether"
+
+[functions.youtube-import]
+verify_jwt = true
+
+[functions.ask-room-tutor]
+verify_jwt = true
+
+[functions.paper-extract]
+verify_jwt = true
