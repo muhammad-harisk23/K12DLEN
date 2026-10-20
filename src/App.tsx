@@ -113,7 +113,7 @@ function AppRoutes() {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            {(loadedProfile) => {
+            {(loadedProfile, refreshProfile) => {
               if (!loadedProfile.onboarded_at) {
                 return (
                   <OnboardingFlow
@@ -122,7 +122,7 @@ function AppRoutes() {
                     classes={classes}
                     subjects={subjects}
                     ready={curriculumReady}
-                    onDone={setProfile}
+                    onDone={() => refreshProfile()}
                   />
                 );
               }

@@ -28,7 +28,7 @@ export function AppShell({ profile, children }: AppShellProps) {
       <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0d0d0d] text-white">
               <BookOpenText className="h-4 w-4" aria-hidden />
             </span>
             <span className="font-display text-base font-bold tracking-tight text-ink">

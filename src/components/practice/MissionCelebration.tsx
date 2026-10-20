@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
+  Award,
   Check,
   Copy,
   Home,
   RefreshCw,
   Share2,
-  Sparkles,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -89,7 +89,7 @@ export function MissionCelebration({
 
   return (
     <div
-      className="celebration-overlay fixed inset-0 z-50 flex items-center justify-center bg-ink/30 p-4 backdrop-blur-sm"
+      className="celebration-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="Mission completion celebration"
@@ -181,7 +181,7 @@ export function MissionCelebration({
           {unlockedBadges.length > 0 && (
             <div className="celebration-stage-c mt-6 rounded-2xl border border-accent/30 bg-accent-soft/30 p-5">
               <p className="flex items-center justify-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-accent-strong">
-                <Sparkles className="h-3.5 w-3.5 text-ink-soft" aria-hidden />
+                <Award className="h-3.5 w-3.5 text-ink-soft" aria-hidden />
                 {unlockedBadges.length === 1 ? 'New badge unlocked' : `${unlockedBadges.length} new badges unlocked`}
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-4">

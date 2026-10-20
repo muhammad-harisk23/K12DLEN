@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Check, ChevronLeft, ChevronRight, Globe2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/TextField';
@@ -38,7 +37,6 @@ export function OnboardingFlow({
   ready,
   onDone,
 }: OnboardingProps) {
-  const navigate = useNavigate();
   const { error, setError, capture } = useAsyncError();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -136,6 +134,31 @@ export function OnboardingFlow({
   // always available, even if the curriculum fetch failed entirely.
   const curriculumMissing =
     ready && (boards.length === 0 || classes.length === 0);
+
+  async function skipOnboarding() {
+    setSaving(true);
+    setError(null);
+    try {
+      const { data, error: updateError } = await supabase
+        .from('student_profiles')
+        .update({
+          display_name: displayName.trim().slice(0, 40) || profile.display_name,
+          onboarded_at: new Date().toISOString(),
+        })
+        .eq('id', profile.id)
+        .select('*')
+        .single();
+      if (updateError || !data) {
+        capture(updateError ?? new Error('Could not save your preferences.'));
+        return;
+      }
+      onDone(data as StudentProfile);
+    } catch {
+      capture(new Error('Could not save your preferences.'));
+    } finally {
+      setSaving(false);
+    }
+  }
 
   function goNext() {
     if (step === 1 && path === 'own') {
@@ -346,7 +369,7 @@ export function OnboardingFlow({
             <Button
               variant="ghost"
               onClick={() =>
-                step === 0 ? navigate('/dashboard') : setStep(step - 1)
+                step === 0 ? void skipOnboarding() : setStep(step - 1)
               }
               disabled={saving}
             >

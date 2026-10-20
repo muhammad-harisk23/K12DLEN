@@ -347,7 +347,7 @@ function ConversationEntry({ message, mine }: { message: TutorMessage; mine: boo
         <div className={`max-w-[85%] ${mine ? 'order-first' : ''}`}>
           <div
             className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-              mine ? 'rounded-br-md bg-ink text-white' : 'rounded-bl-md bg-sunken text-ink'
+              mine ? 'rounded-br-md bg-[#0d0d0d] text-white' : 'rounded-bl-md bg-sunken text-ink'
             }`}
           >
             <p className="whitespace-pre-wrap break-words">{message.body}</p>

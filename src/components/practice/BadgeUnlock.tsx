@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Sparkles, X } from 'lucide-react';
+import { ArrowRight, Award, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { BadgeArtwork } from '@/components/practice/BadgeArtwork';
 import type { Badge } from '@/lib/achievements';
@@ -40,7 +40,7 @@ export function BadgeUnlock({ badge, onClose, onViewAchievements, onContinue }: 
 
   return (
     <div
-      className="celebration-overlay fixed inset-0 z-[70] flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm"
+      className="celebration-overlay fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label={`New badge unlocked: ${badge.name}`}
@@ -71,7 +71,7 @@ export function BadgeUnlock({ badge, onClose, onViewAchievements, onContinue }: 
           {/* Stage D — title and description */}
           <div className="badge-unlock-text mt-5 text-center">
             <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-accent-strong">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden />
+              <Award className="h-3.5 w-3.5" aria-hidden />
               Badge unlocked
             </p>
             <h2 className="mt-2 font-display text-xl font-bold text-ink sm:text-2xl">

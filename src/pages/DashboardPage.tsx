@@ -396,26 +396,20 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
 
       {/* ===== D. Learning outcomes grid ===== */}
       <section aria-label="Your learning outcomes" className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <OutcomeCard
-          label="Active missions"
-          value={progressLoading ? null : progress?.practice.missionsActive ?? 0}
-          icon={<Target className="h-4 w-4" aria-hidden />}
-        />
-        <OutcomeCard
-          label="Missions completed"
-          value={progressLoading ? null : progress?.practice.missionsCompleted ?? 0}
-          icon={<Check className="h-4 w-4" aria-hidden />}
-        />
-        <OutcomeCard
-          label="Completed practice attempts"
-          value={progressLoading ? null : progress?.practice.quizAttempts ?? 0}
-          icon={<PencilLine className="h-4 w-4" aria-hidden />}
-        />
-        <OutcomeCard
-          label="Questions answered correctly"
-          value={progressLoading ? null : progress?.practice.correct ?? 0}
-          icon={<Check className="h-4 w-4" aria-hidden />}
-        />
+        {[
+          { label: 'Active missions', value: progressLoading ? null : progress?.practice.missionsActive ?? 0, icon: <Target className="h-4 w-4" aria-hidden /> },
+          { label: 'Missions completed', value: progressLoading ? null : progress?.practice.missionsCompleted ?? 0, icon: <Check className="h-4 w-4" aria-hidden /> },
+          { label: 'Completed practice attempts', value: progressLoading ? null : progress?.practice.quizAttempts ?? 0, icon: <PencilLine className="h-4 w-4" aria-hidden /> },
+          { label: 'Questions answered correctly', value: progressLoading ? null : progress?.practice.correct ?? 0, icon: <Check className="h-4 w-4" aria-hidden /> },
+        ].map((card, i) => (
+          <OutcomeCard
+            key={card.label}
+            label={card.label}
+            value={card.value}
+            icon={card.icon}
+            className={`card-enter card-enter-delay-${Math.min(i + 1, 5)}`}
+          />
+        ))}
       </section>
 
       {/* ===== E. Your Achievements — 3D tilt cards ===== */}
@@ -436,18 +430,21 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
 
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
           {achievements ? (
-            achievements.badges.map((badge) => (
+            achievements.badges.map((badge, i) => (
               <TiltCard
                 key={badge.slug}
                 disabled={!badge.earned}
-                className={`flex flex-col items-center rounded-2xl border p-5 text-center ${
+                className={`card-enter card-enter-delay-${Math.min(i + 1, 5)} relative flex flex-col items-center overflow-hidden rounded-2xl border p-5 text-center ${
                   badge.earned
                     ? 'border-line bg-gradient-to-br from-sunken/60 to-raised shadow-card'
                     : 'border-line bg-sunken/30'
                 }`}
               >
+                <div className="tilt-card-shine" aria-hidden />
                 <div className="tilt-card-inner flex flex-col items-center">
-                  <BadgeArtwork slug={badge.slug} earned={badge.earned} size={88} />
+                  <div className="tilt-card-emboss">
+                    <BadgeArtwork slug={badge.slug} earned={badge.earned} size={88} />
+                  </div>
                   <p className="mt-3 font-display text-sm font-bold text-ink">{badge.name}</p>
                   <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">{badge.description}</p>
                   {badge.earned ? (
@@ -707,13 +704,15 @@ function OutcomeCard({
   label,
   value,
   icon,
+  className = '',
 }: {
   label: string;
   value: number | null;
   icon: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-raised p-5 shadow-card transition-all hover:shadow-lifted">
+    <div className={`rounded-2xl border border-line bg-raised p-5 shadow-card transition-all hover:shadow-lifted ${className}`}>
       <div className="flex items-center gap-2 text-ink-faint">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sunken">{icon}</span>
         <span className="text-[11px] font-medium uppercase tracking-wide">{label}</span>

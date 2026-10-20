@@ -124,7 +124,7 @@ export function AchievementSharePanel({ data, onClose }: AchievementSharePanelPr
 
   return (
     <div
-      className="celebration-overlay fixed inset-0 z-[60] flex items-center justify-center bg-ink/40 p-4 backdrop-blur-sm"
+      className="celebration-overlay fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="Share your achievement"

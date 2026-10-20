@@ -518,7 +518,7 @@ export function LibraryPage({ profile }: LibraryPageProps) {
                 <li key={v.videoId}>
                   <div className="group flex flex-col gap-4 rounded-2xl border border-line bg-raised p-4 shadow-sm transition-all hover:border-accent/30 hover:shadow-card sm:flex-row">
                     {/* Thumbnail */}
-                    <div className="relative shrink-0 overflow-hidden rounded-xl bg-ink sm:w-44" style={{ aspectRatio: '16 / 9' }}>
+                    <div className="relative shrink-0 overflow-hidden rounded-xl bg-[#0d0d0d] sm:w-44" style={{ aspectRatio: '16 / 9' }}>
                       {v.thumbnail ? (
                         <img
                           src={v.thumbnail}
@@ -532,7 +532,7 @@ export function LibraryPage({ profile }: LibraryPageProps) {
                         </div>
                       )}
                       {v.durationSeconds != null && v.durationSeconds > 0 && (
-                        <span className="absolute bottom-1.5 right-1.5 rounded bg-ink/80 px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-white">
+                        <span className="absolute bottom-1.5 right-1.5 rounded bg-[#0d0d0d]/80 px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-white">
                           {formatDuration(v.durationSeconds)}
                         </span>
                       )}

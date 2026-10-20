@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
+  Check,
   BookOpenText,
   Brain,
   ClipboardList,
@@ -9,11 +10,11 @@ import {
   Compass,
   FileText,
   GraduationCap,
+  KeyRound,
   Layers,
   MessageSquareText,
   Moon,
   PlayCircle,
-  Sparkles,
   Sun,
   Target,
   Timer,
@@ -131,14 +132,14 @@ export function LandingPage() {
             {/* Left — editorial copy */}
             <div className="max-w-xl">
               <span className="landing-hero-enter inline-flex items-center gap-1.5 rounded-full border border-accent/25 bg-accent-soft/30 px-3 py-1 text-xs font-semibold text-accent-strong">
-                <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                <BookOpenText className="h-3.5 w-3.5" aria-hidden />
                 One focused place to learn
               </span>
 
               <h1 className="landing-hero-delay-1 mt-6 font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem]">
                 Studying shouldn't
                 <br className="hidden sm:block" />{' '}
-                take <span className="text-accent">six tabs.</span>
+                take <span className="border-b-2 border-accent pb-0.5">six tabs.</span>
               </h1>
 
               <p className="landing-hero-delay-2 mt-5 max-w-md text-base leading-relaxed text-ink-soft sm:text-lg">
@@ -179,7 +180,7 @@ export function LandingPage() {
         <section className="border-t border-line px-5 py-20 sm:px-8 sm:py-28" aria-label="The real problem">
           <div className="mx-auto max-w-5xl">
             <div className="reveal max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">
                 The real problem
               </p>
               <h2 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">
@@ -222,7 +223,7 @@ export function LandingPage() {
         <section className="px-5 py-20 sm:px-8 sm:py-28" aria-label="Before and after">
           <div className="mx-auto max-w-5xl">
             <div className="reveal mb-10 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">
                 The transformation
               </p>
               <h2 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">
@@ -266,7 +267,7 @@ export function LandingPage() {
               <div className="reveal reveal-delay-1 rounded-2xl border border-accent/25 bg-gradient-to-br from-accent-soft/25 to-raised p-6 shadow-card sm:p-7">
                 <div className="flex items-center gap-2">
                   <span className="flex h-6 w-6 items-center justify-center rounded-md bg-accent text-accent-text">
-                    <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                    <Check className="h-3.5 w-3.5" aria-hidden />
                   </span>
                   <p className="text-xs font-semibold uppercase tracking-wide text-accent-strong">
                     With K12Learn2Gether
@@ -295,7 +296,7 @@ export function LandingPage() {
         <section className="border-t border-line px-5 py-20 sm:px-8 sm:py-28" aria-label="How K12Learn2Gether works">
           <div className="mx-auto max-w-5xl">
             <div className="reveal mb-12 max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">
                 How it works
               </p>
               <h2 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">
@@ -329,7 +330,7 @@ export function LandingPage() {
         <section className="border-t border-line px-5 py-20 sm:px-8 sm:py-28" aria-label="What's coming next">
           <div className="mx-auto max-w-5xl">
             <div className="reveal mb-10 max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">
                 What's coming next
               </p>
               <h2 className="mt-3 font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">
@@ -378,6 +379,63 @@ export function LandingPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===== FREE CORE, FUTURE PREMIUM ===== */}
+        <section className="border-t border-line px-5 py-20 sm:px-8 sm:py-24" aria-label="Free and future plans">
+          <div className="mx-auto max-w-3xl">
+            <div className="reveal rounded-2xl border border-line bg-raised p-6 shadow-sm sm:p-8">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+                <div className="flex-1">
+                  <h2 className="font-display text-xl font-bold text-ink sm:text-2xl">
+                    Free to learn. Premium later, if you want it.
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                    Core learning — bringing your YouTube teachers, studying in rooms,
+                    asking the shared AI, and practicing — stays free. No credit card.
+                    No paywall on the basics.
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                    Later, optional premium tools may support heavier AI usage, deeper
+                    practice modes, personalized revision, and richer analytics. Those
+                    are still being built — not priced yet.
+                  </p>
+                </div>
+                <div className="shrink-0 sm:w-px sm:self-stretch bg-line" aria-hidden />
+                <div className="flex-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                    Free now
+                  </p>
+                  <ul className="mt-3 space-y-2 text-sm text-ink">
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 shrink-0 text-accent-strong" aria-hidden />
+                      Bring your own YouTube lessons
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 shrink-0 text-accent-strong" aria-hidden />
+                      Private study rooms with shared AI
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 shrink-0 text-accent-strong" aria-hidden />
+                      Topic practice and progress tracking
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="h-4 w-4 shrink-0 text-accent-strong" aria-hidden />
+                      Earned achievements and badges
+                    </li>
+                  </ul>
+                  <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                    Coming later
+                  </p>
+                  <ul className="mt-2 space-y-1.5 text-sm text-ink-soft">
+                    <li>Unlimited AI with your own API key</li>
+                    <li>Advanced exam and revision tools</li>
+                    <li>Deeper analytics and competitions</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -440,34 +498,44 @@ function HeroComposition() {
     <div className="relative aspect-[4/5] w-full">
       {/* Scattered "tabs" on the left, converging toward the workspace card */}
       <FloatingTab
-        className="landing-float-slow absolute left-0 top-[6%] w-[42%]"
+        className="hero-tab-converge landing-float-slow absolute left-0 top-[6%] w-[42%]"
         icon={Youtube}
         label="YouTube"
         rotate="-rotate-6"
+        convergeX="40px"
+        convergeY="30px"
       />
       <FloatingTab
-        className="landing-float-slower absolute left-[6%] top-[34%] w-[40%]"
+        className="hero-tab-converge-2 landing-float-slower absolute left-[6%] top-[34%] w-[40%]"
         icon={Brain}
         label="AI chat"
         rotate="rotate-3"
+        convergeX="35px"
+        convergeY="10px"
       />
       <FloatingTab
-        className="landing-float-slow absolute left-[2%] top-[62%] w-[38%]"
+        className="hero-tab-converge-3 landing-float-slow absolute left-[2%] top-[62%] w-[38%]"
         icon={Timer}
         label="Timer"
         rotate="-rotate-3"
+        convergeX="40px"
+        convergeY="-20px"
       />
       <FloatingTab
-        className="landing-float-slower absolute right-[2%] top-[12%] w-[40%]"
+        className="hero-tab-converge-2 landing-float-slower absolute right-[2%] top-[12%] w-[40%]"
         icon={FileText}
         label="PDF"
         rotate="rotate-6"
+        convergeX="-35px"
+        convergeY="20px"
       />
       <FloatingTab
-        className="landing-float-slow absolute right-[4%] top-[44%] w-[42%]"
+        className="hero-tab-converge-3 landing-float-slow absolute right-[4%] top-[44%] w-[42%]"
         icon={MessageSquareText}
         label="Notes"
         rotate="-rotate-2"
+        convergeX="-30px"
+        convergeY="0px"
       />
 
       {/* Convergence arrows — subtle dotted lines toward the center card */}
@@ -514,14 +582,23 @@ function FloatingTab({
   icon: Icon,
   label,
   rotate = '',
+  convergeX = '0px',
+  convergeY = '0px',
 }: {
   className?: string;
   icon: typeof Youtube;
   label: string;
   rotate?: string;
+  convergeX?: string;
+  convergeY?: string;
 }) {
   return (
     <div
+      style={{
+        ['--tab-rotate' as string]: rotate.replace('rotate', '').replace('-', '-').replace('rotate', '') || '0deg',
+        ['--converge-x' as string]: convergeX,
+        ['--converge-y' as string]: convergeY,
+      }}
       className={`flex items-center gap-1.5 rounded-lg border border-line bg-raised px-2.5 py-2 shadow-card ${rotate} ${className}`}
     >
       <Icon className="h-3.5 w-3.5 text-ink-faint" aria-hidden />
@@ -670,7 +747,7 @@ const ROADMAP_ITEMS = [
     status: 'in-progress' as const,
   },
   {
-    icon: Sparkles,
+    icon: KeyRound,
     title: 'Bring Your Own API Key',
     body: 'Use your own AI provider key for unlimited academic questions, with transparent controls and private storage.',
     status: 'in-progress' as const,

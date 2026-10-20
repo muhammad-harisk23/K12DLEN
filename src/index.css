@@ -194,14 +194,91 @@
   /* ---- 3D badge/collectible card tilt ---- */
   .tilt-card {
     transform-style: preserve-3d;
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
     will-change: transform;
+    position: relative;
+  }
+  .tilt-card-pressed {
+    transform: scale(0.97) !important;
+    transition: transform 0.12s ease !important;
   }
   .tilt-card-inner {
-    transform: translateZ(20px);
+    transform: translateZ(24px);
   }
   .tilt-card-emboss {
-    transform: translateZ(8px);
+    transform: translateZ(12px);
+  }
+  .tilt-card-shine {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+      circle 120px at var(--tilt-x, 50%) var(--tilt-y, 50%),
+      rgb(255 255 255 / 0.08) 0%,
+      transparent 70%
+    );
+  }
+  .tilt-card:hover .tilt-card-shine {
+    opacity: 1;
+  }
+  [data-theme="dark"] .tilt-card-shine {
+    background: radial-gradient(
+      circle 120px at var(--tilt-x, 50%) var(--tilt-y, 50%),
+      rgb(255 255 255 / 0.04) 0%,
+      transparent 70%
+    );
+  }
+
+  /* ---- Card entrance stagger ---- */
+  .card-enter {
+    animation: cardEnter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .card-enter-delay-1 { animation-delay: 0.08s; }
+  .card-enter-delay-2 { animation-delay: 0.16s; }
+  .card-enter-delay-3 { animation-delay: 0.24s; }
+  .card-enter-delay-4 { animation-delay: 0.32s; }
+  .card-enter-delay-5 { animation-delay: 0.40s; }
+
+  @keyframes cardEnter {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ---- Convergence animation for hero ---- */
+  .hero-tab-converge {
+    animation: tabConverge 5s ease-in-out 1s infinite;
+  }
+  .hero-tab-converge-2 {
+    animation: tabConverge 5s ease-in-out 1.5s infinite;
+  }
+  .hero-tab-converge-3 {
+    animation: tabConverge 5s ease-in-out 2s infinite;
+  }
+
+  @keyframes tabConverge {
+    0%, 70%, 100% { transform: translate(0, 0) rotate(var(--tab-rotate, 0deg)); }
+    35% { transform: translate(var(--converge-x, 0), var(--converge-y, 0)) rotate(0deg); }
+  }
+
+  /* ---- Drawer slide ---- */
+  .drawer-enter {
+    animation: drawerSlide 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes drawerSlide {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  /* ---- Modal scale entrance ---- */
+  .modal-enter {
+    animation: modalScale 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes modalScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
   }
 
   /* ---- Landing page motion ---- */
@@ -304,7 +381,10 @@
   .landing-hero-enter, .landing-hero-delay-1, .landing-hero-delay-2, .landing-hero-delay-3, .landing-hero-delay-4,
   .landing-chapter-reveal, .landing-arrow-pulse, .landing-float-slow, .landing-float-slower, .landing-shimmer,
   .badge-unlock-silhouette, .badge-unlock-shine, .badge-unlock-reveal, .badge-unlock-text, .badge-unlock-actions,
-  .reveal, .tilt-card {
+  .reveal, .tilt-card,
+  .card-enter, .card-enter-delay-1, .card-enter-delay-2, .card-enter-delay-3, .card-enter-delay-4, .card-enter-delay-5,
+  .hero-tab-converge, .hero-tab-converge-2, .hero-tab-converge-3,
+  .drawer-enter, .modal-enter, .tilt-card-pressed {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

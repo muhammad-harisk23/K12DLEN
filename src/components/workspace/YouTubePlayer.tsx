@@ -236,7 +236,7 @@ export function YouTubePlayer({
     <>
       <div ref={hostRef} className="absolute inset-0" />
       {status === 'loading' && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-ink/60">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/60">
           <Loader2 className="h-6 w-6 animate-spin text-white" aria-label="Loading player" />
         </div>
       )}
@@ -252,7 +252,7 @@ export function YouTubePlayer({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-ink shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-line bg-[#0d0d0d] shadow-sm">
       <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
         {inner}
       </div>

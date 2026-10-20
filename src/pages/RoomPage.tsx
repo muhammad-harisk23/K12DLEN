@@ -660,7 +660,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
           {isPlaylist && (
             <button
               type="button"
-              onClick={() => setShowPlaylist(true)}
+              onClick={() => { setShowMission(false); setShowInvite(false); setShowPlaylist(true); }}
               className="flex min-h-touch items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
             >
               <ListVideo className="h-4 w-4" aria-hidden />
@@ -669,7 +669,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
           )}
           <button
             type="button"
-            onClick={() => setShowMission(true)}
+            onClick={() => { setShowPlaylist(false); setShowInvite(false); setShowMission(true); }}
             className="flex min-h-touch items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
           >
             <Target className="h-4 w-4" aria-hidden />
@@ -678,7 +678,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
           {isOwner && (
             <button
               type="button"
-              onClick={() => setShowInvite(true)}
+              onClick={() => { setShowPlaylist(false); setShowMission(false); setShowInvite(true); }}
               className="flex min-h-touch items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
             >
               <Share2 className="h-4 w-4" aria-hidden />
@@ -712,7 +712,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
                 onStateChange={handleStateChange}
                 onError={handlePlayerError}
                 onReady={() => setPlayerError(null)}
-                className="h-full w-full overflow-hidden rounded-2xl border border-line bg-ink shadow-sm"
+                className="h-full w-full overflow-hidden rounded-2xl border border-line bg-[#0d0d0d] shadow-sm"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 py-10 text-center">
@@ -846,8 +846,8 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
       {/* ===== Playlist drawer (desktop overlay) ===== */}
       {showPlaylist && isPlaylist && (
         <div className="fixed inset-0 z-50 flex" role="dialog" aria-label="Playlist" aria-modal="true">
-          <div className="flex-1 bg-ink/40 backdrop-blur-sm" onClick={() => setShowPlaylist(false)} />
-          <div className="flex w-full max-w-md flex-col border-l border-line bg-surface shadow-lifted">
+          <div className="flex-1 bg-black/50 backdrop-blur-sm" onClick={() => setShowPlaylist(false)} />
+          <div className="drawer-enter flex w-full max-w-md flex-col border-l border-line bg-surface shadow-lifted">
             <div className="flex h-14 shrink-0 items-center justify-between border-b border-line px-4">
               <h2 className="flex min-w-0 items-center gap-2 font-display text-sm font-bold text-ink">
                 <ListVideo className="h-4 w-4 shrink-0" aria-hidden />
@@ -870,8 +870,8 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
       {/* ===== Mission modal ===== */}
       {showMission && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-label="Shared mission" aria-modal="true">
-          <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => setShowMission(false)} />
-          <div className="relative w-full max-w-lg rounded-2xl border border-line bg-surface shadow-lifted">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowMission(false)} />
+          <div className="modal-enter relative w-full max-w-lg rounded-2xl border border-line bg-surface shadow-lifted">
             <div className="flex h-14 items-center justify-between border-b border-line px-5">
               <h2 className="flex items-center gap-2 font-display text-sm font-bold text-ink">
                 <Target className="h-4 w-4" aria-hidden />
@@ -921,8 +921,8 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
       {/* ===== Invite modal (owner only) ===== */}
       {showInvite && isOwner && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-label="Invite a classmate" aria-modal="true">
-          <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => setShowInvite(false)} />
-          <div className="relative w-full max-w-md rounded-2xl border border-line bg-surface shadow-lifted">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowInvite(false)} />
+          <div className="modal-enter relative w-full max-w-md rounded-2xl border border-line bg-surface shadow-lifted">
             <div className="flex h-14 items-center justify-between border-b border-line px-5">
               <h2 className="flex items-center gap-2 font-display text-sm font-bold text-ink">
                 <Share2 className="h-4 w-4" aria-hidden />
