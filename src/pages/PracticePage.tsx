@@ -98,20 +98,20 @@ function Feedback({ question, result }: { question: PracticeQuestion; result: No
   return (
     <div
       className={`mt-6 rounded-2xl border p-4 sm:p-5 ${
-        correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
+        correct ? 'border-line bg-sunken' : 'border-line-strong bg-sunken'
       }`}
       role="status"
     >
-      <p className={`flex items-center gap-2 font-display text-base font-bold ${correct ? 'text-green-800' : 'text-red-800'}`}>
+      <p className={`flex items-center gap-2 font-display text-base font-bold ${correct ? 'text-ink' : 'text-ink'}`}>
         {correct ? <Check className="h-5 w-5" aria-hidden /> : <X className="h-5 w-5" aria-hidden />}
         {skipped ? 'Time ran out — marked incorrect' : correct ? 'Correct' : 'Not quite'}
       </p>
       {!correct && !skipped && (
-        <p className="mt-1.5 text-sm text-red-800">
+        <p className="mt-1.5 text-sm text-ink">
           Correct answer: <span className="font-semibold">{question.options[result.correctIndex]}</span>
         </p>
       )}
-      <p className="mt-2 text-sm leading-relaxed text-gray-700">{result.explanation}</p>
+      <p className="mt-2 text-sm leading-relaxed text-ink-soft">{result.explanation}</p>
     </div>
   );
 }
@@ -220,7 +220,7 @@ function MistakeCard({ mistake, onRetry }: { mistake: MistakeItem; onRetry: () =
             <div
               key={i}
               className={`flex items-center gap-2 rounded-xl px-3 py-2 ${
-                right ? 'bg-green-50 text-green-800' : chosen ? 'bg-red-50 text-red-700' : 'text-ink-soft'
+                right ? 'bg-sunken text-ink font-medium' : chosen ? 'bg-sunken text-ink-soft' : 'text-ink-soft'
               }`}
             >
               {right ? (
@@ -619,18 +619,18 @@ export function PracticePage() {
                     !reveal
                       ? 'border-line hover:border-accent/50 hover:bg-accent-soft/40'
                       : isRight
-                        ? 'border-green-300 bg-green-50 text-green-900'
+                        ? 'border-line bg-sunken text-ink'
                         : isChosen
-                          ? 'border-red-300 bg-red-50 text-red-900'
+                          ? 'border-line-strong bg-sunken text-ink'
                           : 'border-line opacity-60'
                   }`}
                 >
                   <span
                     className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold ${
                       reveal && isRight
-                        ? 'border-green-400 bg-green-100 text-green-800'
+                        ? 'border-line text-ink'
                         : reveal && isChosen
-                          ? 'border-red-400 bg-red-100 text-red-800'
+                          ? 'border-line-strong text-ink-soft'
                           : 'border-line-strong text-ink-soft'
                     }`}
                   >
@@ -645,19 +645,19 @@ export function PracticePage() {
           {result && <Feedback question={currentQuestion} result={result} />}
 
           {timeUp && !result && (
-            <p className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800" role="status">
-              Time ran out for this one — it counts as missed. Move on and keep pace.
+            <p className="mt-6 rounded-2xl border border-line bg-sunken p-4 text-sm text-ink-soft" role="status">
+              Time ran out for this one. It counts as missed. Move on and keep pace.
             </p>
           )}
 
           {finished && (
             <div
               className={`mt-6 rounded-2xl border p-5 ${
-                passed ? 'border-green-200 bg-green-50' : 'border-amber-200 bg-amber-50'
+                passed ? 'border-line bg-sunken' : 'border-line bg-sunken'
               }`}
               role="status"
             >
-              <p className={`font-display text-lg font-bold ${passed ? 'text-green-800' : 'text-amber-800'}`}>
+              <p className={`font-display text-lg font-bold ${passed ? 'text-ink' : 'text-ink-soft'}`}>
                 {passed ? 'Practice passed' : 'Practice completed — under 80%'}
               </p>
               <p className="mt-1 text-sm text-ink-soft">
@@ -708,12 +708,12 @@ export function PracticePage() {
           )}
         </section>
         {loadError && (
-          <p className="mt-4 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+          <p className="mt-4 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
             {loadError}
           </p>
         )}
         {failed && (
-          <p className="mt-4 rounded-xl bg-amber-50 px-3.5 py-2.5 text-xs text-amber-800" role="note">
+          <p className="mt-4 rounded-xl border border-line bg-sunken px-3.5 py-2.5 text-xs text-ink-soft" role="note">
             You can retry as many times as you need. Each attempt is graded honestly and stored separately.
           </p>
         )}
@@ -747,7 +747,7 @@ export function PracticePage() {
       </p>
 
       {loadError && (
-        <p className="mt-4 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+        <p className="mt-4 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
           {loadError}
         </p>
       )}

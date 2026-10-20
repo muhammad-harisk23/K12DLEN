@@ -58,8 +58,8 @@ const TYPE_LABELS: Record<string, string> = {
 
 const CONFIDENCE_STYLES: Record<string, string> = {
   high: 'bg-accent-soft text-accent-strong',
-  medium: 'bg-amber-50 text-amber-800',
-  low: 'bg-red-50 text-red-700',
+  medium: 'border border-line bg-sunken text-ink-soft',
+  low: 'border border-line-strong bg-sunken text-ink',
 };
 
 export function PaperReviewPage({ profile, uploadId }: PaperReviewPageProps) {
@@ -254,7 +254,7 @@ export function PaperReviewPage({ profile, uploadId }: PaperReviewPageProps) {
           <p className="text-xs text-ink-faint">With answer key</p>
         </div>
         <div className="rounded-xl border border-line bg-raised p-3 text-center">
-          <p className={`font-display text-2xl font-bold ${withFigure > 0 ? 'text-amber-600' : 'text-ink'}`}>
+          <p className={`font-display text-2xl font-bold ${withFigure > 0 ? 'text-ink-soft' : 'text-ink'}`}>
             {withFigure}
           </p>
           <p className="text-xs text-ink-faint">With figures</p>
@@ -262,13 +262,13 @@ export function PaperReviewPage({ profile, uploadId }: PaperReviewPageProps) {
       </section>
 
       {load.upload.detection_message && (
-        <p className="mb-4 rounded-xl bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800" role="status">
+        <p className="mb-4 rounded-xl border border-line bg-sunken px-3.5 py-2.5 text-sm text-ink-soft" role="status">
           {load.upload.detection_message}
         </p>
       )}
 
       {error && (
-        <p className="mb-4 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+        <p className="mb-4 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
           {error}
         </p>
       )}
@@ -369,7 +369,7 @@ export function PaperReviewPage({ profile, uploadId }: PaperReviewPageProps) {
 
               {/* Figure warning */}
               {q.has_figure && (
-                <p className="mt-2 flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                <p className="mt-2 flex items-center gap-1.5 rounded-lg border border-line bg-sunken px-3 py-2 text-xs text-ink-soft">
                   <ImageIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
                   {q.figure_note ?? 'This question references a diagram or figure that could not be extracted from the PDF.'}
                 </p>

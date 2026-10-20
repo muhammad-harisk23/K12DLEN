@@ -460,18 +460,18 @@ export function WorkspacePage({
               {savedAt && <span>Saved {savedAt.toLocaleTimeString()}</span>}
             </div>
             {saveError && (
-              <p className="mt-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+              <p className="mt-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
                 {saveError}
               </p>
             )}
             {playerError && (
-              <p className="mt-3 rounded-xl bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800" role="alert">
+              <p className="mt-3 rounded-xl border border-line bg-sunken px-3.5 py-2.5 text-sm text-ink-soft" role="alert">
                 {playerError}
               </p>
             )}
             {blockedAtImport && (
-              <p className="mt-3 rounded-xl bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800" role="alert">
-                The owner of this video does not allow it to play outside YouTube. Watch it there with the button above — your study timer works on videos that allow embedding.
+              <p className="mt-3 rounded-xl border border-line bg-sunken px-3.5 py-2.5 text-sm text-ink-soft" role="alert">
+                The owner of this video does not allow it to play outside YouTube. Watch it there with the button above. Your study timer works on videos that allow embedding.
               </p>
             )}
           </section>
@@ -554,7 +554,7 @@ export function WorkspacePage({
                           </span>
                         )}
                         {!item.available && (
-                          <span className="mt-0.5 block text-[11px] text-red-600">
+                          <span className="mt-0.5 block text-[11px] text-ink-soft">
                             Unavailable on YouTube
                           </span>
                         )}

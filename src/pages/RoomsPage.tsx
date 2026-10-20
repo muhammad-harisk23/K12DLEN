@@ -225,7 +225,7 @@ export function RoomsPage() {
           </div>
 
           {createError && (
-            <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+            <p className="rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
               {createError}
             </p>
           )}
@@ -243,7 +243,7 @@ export function RoomsPage() {
       )}
 
       {loadError && (
-        <p className="mt-6 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+        <p className="mt-6 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
           {loadError}
         </p>
       )}

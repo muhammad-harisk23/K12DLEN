@@ -45,11 +45,11 @@ function statusBadge(status: string): { label: string; className: string } {
     case 'extracted':
       return { label: 'Ready to review', className: 'bg-accent-soft text-accent-strong' };
     case 'processing':
-      return { label: 'Processing', className: 'bg-amber-50 text-amber-800' };
+      return { label: 'Processing', className: 'border border-line bg-sunken text-ink-soft' };
     case 'rejected':
-      return { label: 'No questions found', className: 'bg-red-50 text-red-700' };
+      return { label: 'No questions found', className: 'border border-line-strong bg-sunken text-ink' };
     case 'failed':
-      return { label: 'Failed', className: 'bg-red-50 text-red-700' };
+      return { label: 'Failed', className: 'border border-line-strong bg-sunken text-ink' };
     default:
       return { label: 'Uploaded', className: 'bg-sunken text-ink-soft' };
   }
@@ -231,7 +231,7 @@ export function PaperUploadPage({ profile }: PaperUploadPageProps) {
 
         {phase.status === 'rejected' && (
           <div className="flex flex-col items-center">
-            <XCircle className="h-10 w-10 text-amber-600" aria-hidden />
+            <XCircle className="h-10 w-10 text-ink-soft" aria-hidden />
             <p className="mt-3 font-display text-lg font-semibold text-ink">
               No questions found
             </p>
@@ -250,7 +250,7 @@ export function PaperUploadPage({ profile }: PaperUploadPageProps) {
 
         {phase.status === 'error' && (
           <div className="flex flex-col items-center">
-            <AlertCircle className="h-10 w-10 text-red-600" aria-hidden />
+            <AlertCircle className="h-10 w-10 text-ink" aria-hidden />
             <p className="mt-3 font-display text-lg font-semibold text-ink">
               Something went wrong
             </p>
@@ -294,10 +294,10 @@ export function PaperUploadPage({ profile }: PaperUploadPageProps) {
                       {' · '}{new Date(upload.created_at).toLocaleDateString()}
                     </p>
                     {upload.detection_message && upload.status === 'rejected' && (
-                      <p className="mt-1 text-xs text-amber-700">{upload.detection_message}</p>
+                      <p className="mt-1 text-xs text-ink-soft">{upload.detection_message}</p>
                     )}
                     {upload.error_message && upload.status === 'failed' && (
-                      <p className="mt-1 text-xs text-red-600">{upload.error_message}</p>
+                      <p className="mt-1 text-xs text-ink">{upload.error_message}</p>
                     )}
                   </div>
                   <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${badge.className}`}>
@@ -317,7 +317,7 @@ export function PaperUploadPage({ profile }: PaperUploadPageProps) {
                     type="button"
                     onClick={() => void handleDelete(upload)}
                     disabled={deletingId === upload.id || processing}
-                    className="flex min-h-touch items-center rounded-lg p-1.5 text-ink-faint transition-colors hover:bg-red-50 hover:text-red-600"
+                    className="flex min-h-touch items-center rounded-lg p-1.5 text-ink-faint transition-colors hover:bg-sunken hover:text-ink"
                     title="Delete this paper"
                   >
                     {deletingId === upload.id ? (
@@ -334,7 +334,7 @@ export function PaperUploadPage({ profile }: PaperUploadPageProps) {
       )}
 
       {listError && (
-        <p className="mt-4 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+        <p className="mt-4 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
           {listError}
         </p>
       )}

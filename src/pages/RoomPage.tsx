@@ -632,7 +632,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
                     </span>
                   )}
                   {!item.available && (
-                    <span className="mt-0.5 block text-[11px] text-red-600">Unavailable on YouTube</span>
+                    <span className="mt-0.5 block text-[11px] text-ink-soft">Unavailable on YouTube</span>
                   )}
                   {item.duration_seconds != null && item.duration_seconds > 0 && (
                     <span className="mt-0.5 block text-[11px] text-ink-faint">
@@ -688,7 +688,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
         Position {formatDuration(positionSeconds)} · Your focus timer and playback position stay private to you.
       </p>
       {playerError && (
-        <p className="mt-3 rounded-xl bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800" role="alert">
+        <p className="mt-3 rounded-xl border border-line bg-sunken px-3.5 py-2.5 text-sm text-ink-soft" role="alert">
           {playerError}
         </p>
       )}
@@ -781,7 +781,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
         </Button>
       </div>
       {missionError && (
-        <p className="mt-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+        <p className="mt-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
           {missionError}
         </p>
       )}
@@ -808,7 +808,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
         )}
       </header>
       {leaveError && (
-        <p className="mt-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+        <p className="mt-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
           {leaveError}
         </p>
       )}
@@ -878,7 +878,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
             </div>
           )}
           {inviteError && (
-            <p className="mt-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+            <p className="mt-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
               {inviteError}
             </p>
           )}

@@ -126,7 +126,7 @@ export function InvitePage() {
           <h1 className="font-display text-lg font-bold text-ink">
             Invitation could not be accepted
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-red-700" role="alert">
+          <p className="mt-2 text-sm leading-relaxed text-ink" role="alert">
             {state.message}
           </p>
           <p className="mt-5 text-sm">{backLink}</p>
