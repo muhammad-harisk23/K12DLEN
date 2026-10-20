@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   BookOpen,
   ChevronRight,
-  Clock,
   ExternalLink,
   GraduationCap,
   Link2,
