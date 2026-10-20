@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
+  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -11,8 +12,10 @@ import {
   MessageSquare,
   Pause,
   Play,
+  Share2,
   Target,
   Users,
+  X,
 } from 'lucide-react';
 import { YouTubePlayer } from '@/components/workspace/YouTubePlayer';
 import { ConversationPanel } from '@/components/room/ConversationPanel';
@@ -59,19 +62,6 @@ interface ItemWithChannel extends PlaylistItemMeta {
   embeddable?: boolean;
 }
 
-/**
- * Unified private study room: a single distraction-resistant workspace where
- * the student watches their YouTube teacher, follows the playlist, runs an
- * individual focus timer, and asks the shared AI — all on one screen.
- *
- * Desktop: video + playlist + focus on the left (~63%), persistent shared AI
- * on the right (~37%). Mobile: video on top, focus controls beneath, then
- * Playlist / Shared AI tabs. Video is never remounted when switching tabs.
- *
- * Shared state (mission, participants) streams live via Supabase Realtime,
- * which honors RLS — members only. Per-student playback position and focus
- * seconds are individual; timestamps are never synchronized between students.
- */
 export function RoomPage({ profile, roomId }: RoomPageProps) {
   const [load, setLoad] = useState<LoadState>({ status: 'loading' });
   const [room, setRoom] = useState<RoomDashboard | null>(null);
@@ -92,7 +82,11 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [inviteBusy, setInviteBusy] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [mobileTab, setMobileTab] = useState<MobileTab>('playlist');
+  const [mobileTab, setMobileTab] = useState<MobileTab>('chat');
+  const [showPlaylist, setShowPlaylist] = useState(false);
+  const [showMission, setShowMission] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
+  const navigate = useNavigate();
 
   const playerRef = useRef<YTPlayer | null>(null);
   const sessionRef = useRef(session);
@@ -106,7 +100,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
   sessionRef.current = session;
   focusRef.current = focusSeconds;
 
-  // ---- Initial load ----
   useEffect(() => {
     if (!UUID_RE.test(roomId)) {
       setLoad({ status: 'missing' });
@@ -136,7 +129,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
     };
   }, [roomId]);
 
-  // ---- Load this user's saved study session for the room's resource ----
   useEffect(() => {
     if (load.status !== 'ready' || !room?.lesson) return;
     let cancelled = false;
@@ -157,7 +149,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
         positionRef.current = { seconds: Math.floor(ps), videoId: vid };
         setPositionSeconds(Math.floor(ps));
       } catch {
-        // Saved progress is best-effort; absence just starts from zero.
+        // Saved progress is best-effort.
       }
     })();
     return () => {
@@ -165,7 +157,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
     };
   }, [load.status, room?.lesson?.id]);
 
-  // ---- Realtime: shared mission + membership changes ----
   useEffect(() => {
     if (!room || load.status !== 'ready') return;
     const channel = supabase
@@ -203,7 +194,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
     };
   }, [room, load.status, roomId, profile.id]);
 
-  // ---- Focus timer (individual, never synced) ----
   useEffect(() => {
     if (!isCounting(session)) return;
     const id = window.setInterval(() => {
@@ -230,7 +220,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
     return () => window.clearInterval(id);
   }, [session]);
 
-  // Persist on unmount
   useEffect(() => {
     return () => {
       void playerRef.current?.pauseVideo();
@@ -239,7 +228,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ---- Tab visibility: pause video + accounting; resume is deliberate ----
   useEffect(() => {
     function onVisibility() {
       if (document.hidden) {
@@ -351,13 +339,12 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
     setSession(next);
   }
 
-  // ---- Shared mission update ----
   async function handleSaveMission(e: React.FormEvent) {
     e.preventDefault();
     setMissionError(null);
     const clean = missionDraft.trim();
     if (clean.length > 280) {
-      setMissionError('The study mission must be 280 characters or fewer.');
+      setMissionError('Keep the mission to 280 characters or fewer.');
       return;
     }
     try {
@@ -369,20 +356,18 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
     }
   }
 
-  // ---- Leave room ----
   async function handleLeave() {
     setLeaving(true);
     setLeaveError(null);
     try {
       await leaveRoomSecure(roomId);
-      window.location.assign('/rooms');
+      navigate('/rooms');
     } catch (err) {
       setLeaveError(err instanceof Error ? err.message : 'Could not leave the room.');
       setLeaving(false);
     }
   }
 
-  // ---- Invitation link (owner only) ----
   async function handleCreateInvite() {
     setInviteBusy(true);
     setInviteError(null);
@@ -434,7 +419,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
       ? lesson.youtubeId
       : null;
 
-  // Set the initial video once the lesson is known.
   useEffect(() => {
     if (initialVideoId && currentVideoId === null) {
       const target = initialVideoId;
@@ -504,42 +488,44 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
 
   if (load.status === 'loading') {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="flex h-[100dvh] items-center justify-center bg-surface">
         <Loader2 className="h-6 w-6 animate-spin text-accent" aria-label="Loading room" />
       </div>
     );
   }
 
-  if (load.status === 'denied') {
+  if (load.status === 'denied' || load.status === 'missing' || !room) {
+    const denied = load.status === 'denied';
     return (
-      <div className="mx-auto max-w-md rounded-2xl border border-line bg-raised p-8 text-center shadow-sm">
-        <h1 className="font-display text-lg font-bold text-ink">You're not a member of this room</h1>
-        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-          Study rooms are private. Ask the classmate who owns this room to share an invitation link with you.
-        </p>
-        <Link
-          to="/rooms"
-          className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
-        >
-          Back to my rooms
-        </Link>
-      </div>
-    );
-  }
-
-  if (load.status === 'missing' || !room) {
-    return (
-      <div className="mx-auto max-w-md rounded-2xl border border-line bg-raised p-8 text-center shadow-sm">
-        <h1 className="font-display text-lg font-bold text-ink">Room not found</h1>
-        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-          This study room doesn't exist, or the link belongs to another account.
-        </p>
-        <Link
-          to="/rooms"
-          className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
-        >
-          Back to my rooms
-        </Link>
+      <div className="flex h-[100dvh] flex-col bg-surface">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-line bg-surface px-4">
+          <button
+            type="button"
+            onClick={() => navigate('/rooms')}
+            className="flex min-h-touch items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Back to rooms
+          </button>
+        </header>
+        <div className="flex flex-1 items-center justify-center px-4">
+          <div className="w-full max-w-md rounded-2xl border border-line bg-raised p-8 text-center shadow-sm">
+            <h1 className="font-display text-lg font-bold text-ink">
+              {denied ? "You're not a member of this room" : 'Room not found'}
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              {denied
+                ? 'Study rooms are private. Ask the owner to share an invitation link with you.'
+                : "This study room doesn't exist, or the link belongs to another account."}
+            </p>
+            <Link
+              to="/rooms"
+              className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
+            >
+              Back to my rooms
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -548,32 +534,22 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
   const isOwner = myParticipant?.role === 'owner';
   const displayTitle = lesson?.topic?.trim() || lesson?.title || 'Shared lesson';
   const timerNote = playbackUnavailable
-    ? 'Playback unavailable — timer stopped'
+    ? 'Playback unavailable, timer stopped'
     : counting
-      ? 'Counting while the video plays (yours only)'
+      ? 'Counting while the video plays'
       : session.phase === 'studying'
-        ? 'Waiting for playback…'
+        ? 'Waiting for playback'
         : session.phase === 'paused'
-          ? 'Paused — press Resume to continue'
-          : 'Press Start, then play the video';
+          ? 'Paused, press Resume to continue'
+          : 'Start a session, then play your lesson';
 
   const playlistPanel = isPlaylist ? (
     <aside
       aria-label="Playlist videos"
-      className="flex min-h-0 flex-col rounded-2xl border border-line bg-raised shadow-sm"
+      className="flex h-full min-h-0 flex-col"
     >
-      <div className="flex items-center justify-between gap-2 border-b border-line px-3 py-2.5">
-        <h2 className="flex min-w-0 items-center gap-1.5 text-sm font-semibold text-ink">
-          <ListVideo className="h-4 w-4 shrink-0 text-accent" aria-hidden />
-          <span className="truncate">{lesson?.title ?? 'Playlist'}</span>
-        </h2>
-        <span className="shrink-0 text-xs text-ink-faint">
-          {currentIndex >= 0 ? `${currentIndex + 1} / ${playlistItems!.length}` : `${playlistItems!.length}`}
-          {playlistTruncated ? '+' : ''}
-        </span>
-      </div>
       {canPrev || canNext ? (
-        <div className="flex items-center justify-between gap-2 border-b border-line px-3 py-2">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-line px-3 py-2">
           <Button
             variant="secondary"
             disabled={!canPrev}
@@ -583,7 +559,10 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
             <ChevronLeft className="h-3.5 w-3.5" aria-hidden />
             Prev
           </Button>
-          <span className="text-[11px] text-ink-faint">your pace</span>
+          <span className="text-[11px] text-ink-faint">
+            {currentIndex >= 0 ? `${currentIndex + 1} / ${playlistItems!.length}` : `${playlistItems!.length}`}
+            {playlistTruncated ? '+' : ''}
+          </span>
           <Button
             variant="secondary"
             disabled={!canNext}
@@ -646,259 +625,168 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
         })}
       </ul>
       {playlistTruncated && (
-        <p className="border-t border-line px-3 py-2 text-[11px] leading-relaxed text-ink-faint">
+        <p className="shrink-0 border-t border-line px-3 py-2 text-[11px] leading-relaxed text-ink-faint">
           This playlist has more videos than we import. Open it on YouTube to see everything.
         </p>
       )}
     </aside>
   ) : null;
 
-  const focusPanel = (
-    <section
-      aria-label="Focus session"
-      className="rounded-2xl border border-line bg-raised p-4 shadow-sm sm:p-5"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft">
-            <Clock className="h-5 w-5 text-accent-strong" aria-hidden />
-          </div>
-          <div>
-            <p className="font-display text-2xl font-bold tabular-nums leading-none text-ink">
-              {formatDuration(focusSeconds)}
-            </p>
-            <p className="mt-1 text-xs text-ink-faint">{timerNote}</p>
-          </div>
-        </div>
-        <div>
-          {counting && !playbackUnavailable ? (
-            <Button variant="secondary" onClick={pauseSession}>
-              <Pause className="h-4 w-4" aria-hidden />
-              Pause session
-            </Button>
-          ) : !playbackUnavailable ? (
-            <Button variant="primary" onClick={startSession}>
-              <Play className="h-4 w-4" aria-hidden />
-              {session.phase === 'paused' ? 'Resume session' : 'Start session'}
-            </Button>
-          ) : null}
-        </div>
-      </div>
-      <p className="mt-3 text-xs text-ink-faint">
-        Position {formatDuration(positionSeconds)} · Your focus timer and playback position stay private to you.
-      </p>
-      {playerError && (
-        <p className="mt-3 rounded-xl border border-line bg-sunken px-3.5 py-2.5 text-sm text-ink-soft" role="alert">
-          {playerError}
-        </p>
-      )}
-    </section>
-  );
-
-  const videoBlock = lesson ? (
-    <div>
-      <YouTubePlayer
-        videoId={playerVideoId}
-        autoplay={false}
-        startSeconds={startSeconds}
-        watchUrl={watchUrl}
-        onStateChange={handleStateChange}
-        onError={handlePlayerError}
-        onReady={() => setPlayerError(null)}
-      />
-      <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="font-display text-lg font-bold leading-snug text-ink">
-            {isPlaylist && currentIndex >= 0
-              ? playlistItems![currentIndex].title ?? displayTitle
-              : displayTitle}
-          </h2>
-          {currentChannel && (
-            <p className="mt-0.5 text-sm text-ink-soft">
-              {isPlaylist ? 'Video channel: ' : 'Channel: '}
-              <span className="font-medium text-ink">{currentChannel}</span>
-              {isPlaylist && lesson.channel && lesson.channel !== currentChannel && (
-                <span className="text-ink-faint"> · playlist curated by {lesson.channel}</span>
-              )}
-            </p>
-          )}
-          {lesson.topic?.trim() && (
-            <p className="mt-1 inline-flex items-center gap-1 text-xs text-ink-faint">
-              <Target className="h-3.5 w-3.5" aria-hidden />
-              Study goal: {lesson.topic.trim()}
-            </p>
-          )}
-        </div>
-        <a
-          href={watchUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex min-h-touch items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
-          title="Open on YouTube (creator and platform attribution preserved)"
-        >
-          View on YouTube
-          <ExternalLink className="h-4 w-4" aria-hidden />
-        </a>
-      </div>
-    </div>
-  ) : (
-    <div className="rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 py-10 text-center">
-      <Link2 className="mx-auto h-8 w-8 text-ink-faint" aria-hidden />
-      <p className="mt-3 text-sm font-medium text-ink">No lesson linked yet</p>
-      <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-ink-soft">
-        This room has no shared lesson yet. The owner can link one by creating a new room from a saved lesson.
-      </p>
-    </div>
-  );
-
-  const missionEditor = (
-    <form
-      onSubmit={handleSaveMission}
-      className="rounded-2xl border border-accent/25 bg-raised p-5 shadow-sm sm:p-6"
-    >
-      <label htmlFor="shared-mission" className="text-sm font-medium text-ink">
-        Shared study mission
-      </label>
-      <p className="mt-1 text-xs leading-relaxed text-ink-faint">
-        Everyone in this room works toward this same academic goal.
-      </p>
-      <textarea
-        id="shared-mission"
-        value={missionDraft}
-        onChange={(e) => setMissionDraft(e.target.value)}
-        maxLength={280}
-        rows={2}
-        className="mt-3 w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm leading-relaxed text-ink focus:border-accent focus:outline-none"
-      />
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-        <span className="text-xs text-ink-faint">
-          {missionSavedAt && !missionDirty
-            ? `Saved ${missionSavedAt.toLocaleTimeString()}`
-            : `${missionDraft.length}/280`}
-        </span>
-        <Button type="submit" disabled={!missionDirty} loading={false}>
-          Save mission
-        </Button>
-      </div>
-      {missionError && (
-        <p className="mt-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
-          {missionError}
-        </p>
-      )}
-    </form>
-  );
+  const playerBlock = lesson ? (
+    <YouTubePlayer
+      videoId={playerVideoId}
+      autoplay={false}
+      startSeconds={startSeconds}
+      watchUrl={watchUrl}
+      onStateChange={handleStateChange}
+      onError={handlePlayerError}
+      onReady={() => setPlayerError(null)}
+    />
+  ) : null;
 
   return (
-    <div className="animate-fade-up mx-auto max-w-7xl px-1">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="inline-flex items-center gap-1.5 text-xs font-medium text-accent">
-            <Users className="h-3.5 w-3.5" aria-hidden />
-            Private study room
-          </p>
-          <h1 className="mt-1 font-display text-2xl font-bold leading-snug text-ink sm:text-3xl">
-            {room.title}
-          </h1>
-          {isOwner && <p className="mt-1 text-xs text-ink-faint">You own this room</p>}
-        </div>
-        {!isOwner && (
-          <Button variant="secondary" onClick={() => void handleLeave()} loading={leaving}>
-            Leave room
-          </Button>
-        )}
-      </header>
-      {leaveError && (
-        <p className="mt-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
-          {leaveError}
-        </p>
-      )}
-
-      {/* Participants + mission summary */}
-      <section aria-label="Participants" className="mt-4 flex flex-wrap items-center gap-2">
-        {room.participants.map((p) => (
-          <span
-            key={p.userId}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-              p.role === 'owner'
-                ? 'bg-accent-soft text-accent-strong'
-                : 'bg-raised text-ink-soft border border-line'
-            }`}
-          >
-            {p.displayName ?? 'Classmate'}
-            {p.role === 'owner' ? ' · owner' : ''}
-          </span>
-        ))}
-      </section>
-
-      {/* Invitation share (owner only) */}
-      {isOwner && (
-        <section
-          aria-label="Invite a classmate"
-          className="mt-4 rounded-2xl border border-accent/25 bg-raised p-5 shadow-sm sm:p-6"
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-surface">
+      {/* ===== Compact room toolbar ===== */}
+      <header className="flex h-14 shrink-0 items-center gap-2 border-b border-line bg-surface px-2 sm:px-3">
+        <button
+          type="button"
+          onClick={() => navigate('/rooms')}
+          className="flex min-h-touch items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+          aria-label="Back to rooms"
         >
-          <h2 className="flex items-center gap-1.5 text-sm font-semibold text-ink">
-            <Users className="h-4 w-4 text-accent" aria-hidden />
-            Invite a classmate
-          </h2>
-          {inviteLink ? (
-            <div className="mt-3 space-y-3">
-              <p className="break-all rounded-xl bg-sunken px-3.5 py-2.5 text-xs leading-relaxed text-ink-soft">
-                {inviteLink}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => void handleCopyInvite()}>
-                  {copied ? 'Copied' : 'Copy link'}
-                </Button>
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(`Join my study room: ${inviteLink}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex min-h-touch items-center rounded-xl border border-line px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-line-strong"
-                >
-                  WhatsApp
-                </a>
-                <a
-                  href={`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent('Join my study room')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex min-h-touch items-center rounded-xl border border-line px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-line-strong"
-                >
-                  Telegram
-                </a>
-              </div>
-              <p className="text-xs leading-relaxed text-ink-faint">
-                This link works for 7 days and can be used by up to 8 members.
-              </p>
-            </div>
-          ) : (
-            <div className="mt-3">
-              <Button onClick={() => void handleCreateInvite()} loading={inviteBusy}>
-                Create invitation link
-              </Button>
-            </div>
-          )}
-          {inviteError && (
-            <p className="mt-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
-              {inviteError}
-            </p>
-          )}
-        </section>
-      )}
-
-      {/* ===== Unified split workspace ===== */}
-      <div className="mt-6 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(360px,38%)] lg:gap-5">
-        {/* LEFT column: video, focus, playlist, mission */}
-        <div className="flex min-w-0 flex-col gap-5">
-          {videoBlock}
-          {focusPanel}
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          <span className="hidden sm:inline">Rooms</span>
+        </button>
+        <div className="h-5 w-px shrink-0 bg-line" aria-hidden />
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <Users className="h-4 w-4 shrink-0 text-ink-faint" aria-hidden />
+          <h1 className="truncate font-display text-sm font-bold text-ink">{room.title}</h1>
+          <span className="hidden shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] font-medium text-ink-faint sm:inline">
+            Private
+          </span>
+          <span className="shrink-0 text-[11px] text-ink-faint">
+            {room.participants.length} {room.participants.length === 1 ? 'member' : 'members'}
+          </span>
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
           {isPlaylist && (
-            <div className="hidden lg:block lg:max-h-[420px]">{playlistPanel}</div>
+            <button
+              type="button"
+              onClick={() => setShowPlaylist(true)}
+              className="flex min-h-touch items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+            >
+              <ListVideo className="h-4 w-4" aria-hidden />
+              <span className="hidden sm:inline">Playlist</span>
+            </button>
           )}
-          {missionEditor}
+          <button
+            type="button"
+            onClick={() => setShowMission(true)}
+            className="flex min-h-touch items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+          >
+            <Target className="h-4 w-4" aria-hidden />
+            <span className="hidden sm:inline">Mission</span>
+          </button>
+          {isOwner && (
+            <button
+              type="button"
+              onClick={() => setShowInvite(true)}
+              className="flex min-h-touch items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+            >
+              <Share2 className="h-4 w-4" aria-hidden />
+              <span className="hidden sm:inline">Invite</span>
+            </button>
+          )}
+          {!isOwner && (
+            <button
+              type="button"
+              onClick={() => void handleLeave()}
+              disabled={leaving}
+              className="flex min-h-touch items-center rounded-lg px-2.5 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+            >
+              Leave
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* ===== Desktop: one-screen split workspace ===== */}
+      <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(340px,38%)]">
+        {/* Left: video + info + focus */}
+        <div className="flex min-h-0 min-w-0 flex-col">
+          <div className="flex min-h-0 flex-1 items-center justify-center p-3">
+            {playerBlock ? (
+              <div className="relative w-full" style={{ aspectRatio: '16 / 9', maxHeight: '100%' }}>
+                {playerBlock}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 py-10 text-center">
+                <Link2 className="mx-auto h-8 w-8 text-ink-faint" aria-hidden />
+                <p className="mt-3 text-sm font-medium text-ink">No lesson linked</p>
+                <p className="mt-1 text-sm text-ink-soft">The owner can link one from a saved lesson.</p>
+              </div>
+            )}
+          </div>
+
+          <div className="shrink-0 border-t border-line px-4 py-2.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="truncate font-display text-sm font-bold text-ink">
+                  {isPlaylist && currentIndex >= 0
+                    ? playlistItems![currentIndex].title ?? displayTitle
+                    : displayTitle}
+                </h2>
+                {currentChannel && (
+                  <p className="truncate text-xs text-ink-soft">{currentChannel}</p>
+                )}
+              </div>
+              <a
+                href={watchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-touch shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+              >
+                <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                YouTube
+              </a>
+            </div>
+            <div className="mt-2.5 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft">
+                  <Clock className="h-4 w-4 text-accent-strong" aria-hidden />
+                </div>
+                <div>
+                  <p className="font-display text-lg font-bold tabular-nums leading-none text-ink">
+                    {formatDuration(focusSeconds)}
+                  </p>
+                  <p className="text-[10px] text-ink-faint">{timerNote}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] tabular-nums text-ink-faint">
+                  {formatDuration(positionSeconds)}
+                </span>
+                {counting && !playbackUnavailable ? (
+                  <Button variant="secondary" onClick={pauseSession} className="!px-3 !py-1.5 text-xs">
+                    <Pause className="h-3.5 w-3.5" aria-hidden />
+                    Pause
+                  </Button>
+                ) : !playbackUnavailable ? (
+                  <Button variant="primary" onClick={startSession} className="!px-3 !py-1.5 text-xs">
+                    <Play className="h-3.5 w-3.5" aria-hidden />
+                    {session.phase === 'paused' ? 'Resume' : 'Start'}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+            {playerError && (
+              <p className="mt-2 text-xs text-ink-soft" role="alert">{playerError}</p>
+            )}
+          </div>
         </div>
 
-        {/* RIGHT column: persistent shared AI (desktop) */}
-        <div className="hidden lg:flex lg:min-h-[calc(100vh-200px)] lg:flex-col lg:sticky lg:top-4">
+        {/* Right: shared AI chat */}
+        <div className="min-h-0 border-l border-line">
           <ConversationPanel
             roomId={roomId}
             profile={profile}
@@ -910,22 +798,49 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
         </div>
       </div>
 
-      {/* ===== Mobile lower panel: Playlist / Shared AI tabs ===== */}
-      <div className="mt-5 lg:hidden">
-        {isPlaylist && (
-          <div className="mb-3 flex rounded-xl border border-line bg-raised p-1" role="tablist" aria-label="Room panels">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mobileTab === 'playlist'}
-              onClick={() => setMobileTab('playlist')}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                mobileTab === 'playlist' ? 'bg-accent-soft text-accent-strong' : 'text-ink-soft'
-              }`}
-            >
-              <ListVideo className="h-4 w-4" aria-hidden />
-              Playlist
-            </button>
+      {/* ===== Mobile: stacked workspace with tabs ===== */}
+      <div className="flex min-h-0 flex-1 flex-col lg:hidden">
+        {/* Video: fixed 16:9, stays mounted */}
+        <div className="shrink-0">
+          {playerBlock ?? (
+            <div className="flex aspect-video items-center justify-center rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 text-center">
+              <p className="text-sm text-ink-soft">No lesson linked</p>
+            </div>
+          )}
+        </div>
+
+        {/* Compact focus bar */}
+        <div className="shrink-0 border-b border-line px-3 py-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-ink-soft" aria-hidden />
+              <span className="font-display text-base font-bold tabular-nums text-ink">
+                {formatDuration(focusSeconds)}
+              </span>
+              <span className="text-[10px] text-ink-faint">{timerNote}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {counting && !playbackUnavailable ? (
+                <Button variant="secondary" onClick={pauseSession} className="!px-3 !py-1.5 text-xs">
+                  <Pause className="h-3.5 w-3.5" aria-hidden />
+                  Pause
+                </Button>
+              ) : !playbackUnavailable ? (
+                <Button variant="primary" onClick={startSession} className="!px-3 !py-1.5 text-xs">
+                  <Play className="h-3.5 w-3.5" aria-hidden />
+                  {session.phase === 'paused' ? 'Resume' : 'Start'}
+                </Button>
+              ) : null}
+            </div>
+          </div>
+          {playerError && (
+            <p className="mt-1.5 text-xs text-ink-soft" role="alert">{playerError}</p>
+          )}
+        </div>
+
+        {/* Tabbed panels: AI / Playlist */}
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex shrink-0 border-b border-line bg-raised p-1" role="tablist" aria-label="Room panels">
             <button
               type="button"
               role="tab"
@@ -936,22 +851,185 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
               }`}
             >
               <MessageSquare className="h-4 w-4" aria-hidden />
-              Shared AI
+              AI
             </button>
+            {isPlaylist && (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mobileTab === 'playlist'}
+                onClick={() => setMobileTab('playlist')}
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  mobileTab === 'playlist' ? 'bg-accent-soft text-accent-strong' : 'text-ink-soft'
+                }`}
+              >
+                <ListVideo className="h-4 w-4" aria-hidden />
+                Playlist
+              </button>
+            )}
           </div>
-        )}
-        {isPlaylist && mobileTab === 'playlist' ? (
-          <div className="max-h-[60vh]">{playlistPanel}</div>
-        ) : (
-          <ConversationPanel
-            roomId={roomId}
-            profile={profile}
-            roomReady={true}
-            currentVideoTitle={currentVideoTitle}
-            currentVideoId={playerVideoId}
-          />
-        )}
+          <div className="min-h-0 flex-1 overflow-hidden">
+            {mobileTab === 'playlist' && isPlaylist ? (
+              <div className="h-full border border-line bg-raised shadow-sm">{playlistPanel}</div>
+            ) : (
+              <ConversationPanel
+                roomId={roomId}
+                profile={profile}
+                roomReady={true}
+                currentVideoTitle={currentVideoTitle}
+                currentVideoId={playerVideoId}
+                fillHeight
+              />
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* ===== Playlist drawer (desktop overlay) ===== */}
+      {showPlaylist && isPlaylist && (
+        <div className="fixed inset-0 z-50 flex" role="dialog" aria-label="Playlist" aria-modal="true">
+          <div className="flex-1 bg-ink/40 backdrop-blur-sm" onClick={() => setShowPlaylist(false)} />
+          <div className="flex w-full max-w-md flex-col border-l border-line bg-surface shadow-lifted">
+            <div className="flex h-14 shrink-0 items-center justify-between border-b border-line px-4">
+              <h2 className="flex min-w-0 items-center gap-2 font-display text-sm font-bold text-ink">
+                <ListVideo className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="truncate">{lesson?.title ?? 'Playlist'}</span>
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowPlaylist(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+                aria-label="Close playlist"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-hidden">{playlistPanel}</div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== Mission modal ===== */}
+      {showMission && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-label="Shared mission" aria-modal="true">
+          <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => setShowMission(false)} />
+          <div className="relative w-full max-w-lg rounded-2xl border border-line bg-surface shadow-lifted">
+            <div className="flex h-14 items-center justify-between border-b border-line px-5">
+              <h2 className="flex items-center gap-2 font-display text-sm font-bold text-ink">
+                <Target className="h-4 w-4" aria-hidden />
+                Shared mission
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowMission(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+                aria-label="Close mission"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-5">
+              <form onSubmit={handleSaveMission}>
+                <label htmlFor="shared-mission" className="text-sm font-medium text-ink">
+                  Set a goal for your study room
+                </label>
+                <textarea
+                  id="shared-mission"
+                  value={missionDraft}
+                  onChange={(e) => setMissionDraft(e.target.value)}
+                  maxLength={280}
+                  rows={3}
+                  className="mt-2 w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm leading-relaxed text-ink focus:border-accent focus:outline-none"
+                />
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <span className="text-xs text-ink-faint">
+                    {missionSavedAt && !missionDirty
+                      ? `Saved ${missionSavedAt.toLocaleTimeString()}`
+                      : `${missionDraft.length}/280`}
+                  </span>
+                  <Button type="submit" disabled={!missionDirty} loading={false}>
+                    Save mission
+                  </Button>
+                </div>
+                {missionError && (
+                  <p className="mt-3 text-sm text-ink" role="alert">{missionError}</p>
+                )}
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== Invite modal (owner only) ===== */}
+      {showInvite && isOwner && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-label="Invite a classmate" aria-modal="true">
+          <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={() => setShowInvite(false)} />
+          <div className="relative w-full max-w-md rounded-2xl border border-line bg-surface shadow-lifted">
+            <div className="flex h-14 items-center justify-between border-b border-line px-5">
+              <h2 className="flex items-center gap-2 font-display text-sm font-bold text-ink">
+                <Share2 className="h-4 w-4" aria-hidden />
+                Invite a classmate
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowInvite(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+                aria-label="Close invite"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-5">
+              {inviteLink ? (
+                <div className="space-y-3">
+                  <p className="break-all rounded-xl bg-sunken px-3.5 py-2.5 text-xs leading-relaxed text-ink-soft">
+                    {inviteLink}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="secondary" onClick={() => void handleCopyInvite()}>
+                      {copied ? 'Copied' : 'Copy link'}
+                    </Button>
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(`Join my study room: ${inviteLink}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex min-h-touch items-center rounded-xl border border-line px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-line-strong"
+                    >
+                      WhatsApp
+                    </a>
+                    <a
+                      href={`https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent('Join my study room')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex min-h-touch items-center rounded-xl border border-line px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-line-strong"
+                    >
+                      Telegram
+                    </a>
+                  </div>
+                  <p className="text-xs text-ink-faint">Works for 7 days, up to 8 members.</p>
+                </div>
+              ) : (
+                <Button onClick={() => void handleCreateInvite()} loading={inviteBusy}>
+                  Create invitation link
+                </Button>
+              )}
+              {inviteError && (
+                <p className="mt-3 text-sm text-ink" role="alert">{inviteError}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Leave error toast */}
+      {leaveError && (
+        <div
+          className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-line-strong bg-raised px-4 py-3 text-sm text-ink shadow-lifted"
+          role="alert"
+        >
+          {leaveError}
+        </div>
+      )}
     </div>
   );
 }
