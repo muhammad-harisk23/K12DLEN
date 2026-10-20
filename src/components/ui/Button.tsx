@@ -18,13 +18,13 @@ const sizeClasses: Record<Size, string> = {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    'bg-accent text-white hover:bg-accent-strong focus-visible:outline-accent shadow-sm',
+    'bg-accent text-accent-text hover:bg-accent-strong focus-visible:outline-accent shadow-sm',
   secondary:
     'bg-raised text-ink border border-line hover:border-line-strong hover:bg-sunken focus-visible:outline-accent',
   ghost:
     'bg-transparent text-ink-soft hover:bg-sunken hover:text-ink focus-visible:outline-accent',
   danger:
-    'bg-ink text-white hover:bg-ink-soft border border-line-strong focus-visible:outline-ink',
+    'bg-error text-white hover:opacity-90 border border-line-strong focus-visible:outline-error',
 };
 
 export function Button({

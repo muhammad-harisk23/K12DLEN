@@ -61,7 +61,7 @@ export function DailyGoalEditor({ questionsGoal, onSave, saving }: DailyGoalEdit
             onClick={() => setDraft(n)}
             className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
               draft === n
-                ? 'bg-accent text-white'
+                ? 'bg-accent text-accent-text'
                 : 'bg-raised text-ink-soft border border-line hover:border-accent/50'
             }`}
           >

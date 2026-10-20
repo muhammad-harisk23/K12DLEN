@@ -281,7 +281,7 @@ export function ExamConfigurePage({ profile, uploadId }: ExamConfigurePageProps)
                     }`}
                   >
                     <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
-                      isSelected ? 'border-accent bg-accent text-white' : 'border-line-strong'
+                      isSelected ? 'border-accent bg-accent text-accent-text' : 'border-line-strong'
                     }`}>
                       {isSelected && <Check className="h-3 w-3" aria-hidden />}
                     </div>

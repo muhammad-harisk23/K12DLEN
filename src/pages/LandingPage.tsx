@@ -77,7 +77,7 @@ export function LandingPage() {
       <header className="sticky top-0 z-30 border-b border-line/80 bg-surface/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white shadow-sm">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-accent-text shadow-sm">
               <BookOpenText className="h-4 w-4" aria-hidden />
             </span>
             <span className="font-display text-base font-bold tracking-tight text-ink">
@@ -101,7 +101,7 @@ export function LandingPage() {
             </Link>
             <Link
               to={primaryHref}
-              className="flex min-h-touch items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-accent-strong hover:shadow-card"
+              className="flex min-h-touch items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-text shadow-sm transition-all hover:bg-accent-strong hover:shadow-card"
             >
               {primaryLabel}
               <ArrowRight className="h-4 w-4" aria-hidden />
@@ -150,7 +150,7 @@ export function LandingPage() {
               <div className="landing-hero-delay-3 mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   to={primaryHref}
-                  className="flex min-h-touch items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-base font-semibold text-white shadow-card transition-all hover:bg-accent-strong hover:shadow-lifted sm:w-auto"
+                  className="flex min-h-touch items-center justify-center gap-2 rounded-xl bg-accent px-6 py-3 text-base font-semibold text-accent-text shadow-card transition-all hover:bg-accent-strong hover:shadow-lifted sm:w-auto"
                 >
                   {primaryLabel}
                   <ArrowRight className="h-5 w-5" aria-hidden />
@@ -265,7 +265,7 @@ export function LandingPage() {
               {/* AFTER */}
               <div className="reveal reveal-delay-1 rounded-2xl border border-accent/25 bg-gradient-to-br from-accent-soft/25 to-raised p-6 shadow-card sm:p-7">
                 <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-accent text-white">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-accent text-accent-text">
                     <Sparkles className="h-3.5 w-3.5" aria-hidden />
                   </span>
                   <p className="text-xs font-semibold uppercase tracking-wide text-accent-strong">
@@ -367,7 +367,7 @@ export function LandingPage() {
                       <span
                         className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
                           item.status === 'available'
-                            ? 'bg-accent text-white'
+                            ? 'bg-accent text-accent-text'
                             : 'bg-sunken text-ink-faint'
                         }`}
                       >
@@ -395,7 +395,7 @@ export function LandingPage() {
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 to={primaryHref}
-                className="flex min-h-touch w-full items-center justify-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-white shadow-card transition-all hover:bg-accent-strong hover:shadow-lifted sm:w-auto"
+                className="flex min-h-touch w-full items-center justify-center gap-2 rounded-xl bg-accent px-7 py-3.5 text-base font-semibold text-accent-text shadow-card transition-all hover:bg-accent-strong hover:shadow-lifted sm:w-auto"
               >
                 {primaryLabel}
                 <ArrowRight className="h-5 w-5" aria-hidden />
@@ -416,7 +416,7 @@ export function LandingPage() {
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-white">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-accent-text">
                 <BookOpenText className="h-3.5 w-3.5" aria-hidden />
               </span>
               <span className="font-display text-sm font-bold text-ink">K12Learn2Gether</span>

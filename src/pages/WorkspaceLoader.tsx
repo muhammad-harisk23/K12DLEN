@@ -160,7 +160,7 @@ export function WorkspaceLoader({ profile, resourceId }: WorkspaceLoaderProps) {
         <button
           type="button"
           onClick={() => navigate('/dashboard')}
-          className="mt-5 min-h-touch rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
+          className="mt-5 min-h-touch rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-accent-text transition-colors hover:bg-accent-strong"
         >
           Back to dashboard
         </button>

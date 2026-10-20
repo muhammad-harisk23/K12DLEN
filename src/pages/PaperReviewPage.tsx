@@ -203,7 +203,7 @@ export function PaperReviewPage({ profile, uploadId }: PaperReviewPageProps) {
         </p>
         <Link
           to="/papers"
-          className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
+          className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-accent-text transition-colors hover:bg-accent-strong"
         >
           Back to Paper to Practice
         </Link>
@@ -507,7 +507,7 @@ export function PaperReviewPage({ profile, uploadId }: PaperReviewPageProps) {
             <div className="mt-3 border-t border-line pt-3">
               <Link
                 to={`/papers/${uploadId}/exam`}
-                className="flex min-h-touch items-center justify-center gap-1.5 rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
+                className="flex min-h-touch items-center justify-center gap-1.5 rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-accent-text transition-colors hover:bg-accent-strong"
               >
                 Create exam from these questions
                 <ArrowRight className="h-4 w-4" aria-hidden />

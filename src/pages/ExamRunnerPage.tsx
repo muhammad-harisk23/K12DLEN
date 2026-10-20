@@ -247,7 +247,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
             <div className="rounded-2xl border border-line bg-raised p-5 shadow-sm sm:p-6">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-text">
                     {currentIdx + 1}
                   </span>
                   {currentQ.marks != null && (
@@ -295,7 +295,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
                             }`}
                           >
                             <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${
-                              selected ? 'border-accent bg-accent text-white' : 'border-line-strong text-ink-faint'
+                              selected ? 'border-accent bg-accent text-accent-text' : 'border-line-strong text-ink-faint'
                             }`}>
                               {String.fromCharCode(65 + i)}
                             </span>

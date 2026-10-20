@@ -16,15 +16,16 @@
     --ink-soft: #525252;
     --ink-faint: #8a8a8a;
 
-    /* Monochrome accent — ink black for actions/progress */
-    --accent: #111111;
-    --accent-strong: #000000;
-    --accent-soft: #f4f4f4;
+    /* Light-blue accent for primary actions */
+    --accent: #BFE7FF;
+    --accent-strong: #A9DCF6;
+    --accent-soft: #E8F5FE;
+    --accent-text: #071724;
 
     /* Feedback — restrained, readable */
-    --success: #111111;
-    --warning: #525252;
-    --error: #111111;
+    --success: #0a7d34;
+    --warning: #8a6300;
+    --error: #b91c1c;
 
     --shadow-color: 0 0 0;
     --ring-track: 229 229 229;
@@ -42,14 +43,15 @@
     --ink-soft: #b8b8b8;
     --ink-faint: #707070;
 
-    /* Monochrome accent — white for actions/progress */
-    --accent: #fafafa;
-    --accent-strong: #ffffff;
-    --accent-soft: #1a1a1a;
+    /* Light-blue accent — same in both themes */
+    --accent: #BFE7FF;
+    --accent-strong: #A9DCF6;
+    --accent-soft: #1a2838;
+    --accent-text: #071724;
 
-    --success: #fafafa;
-    --warning: #b8b8b8;
-    --error: #fafafa;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
 
     --shadow-color: 0 0 0;
     --ring-track: 48 48 48;

@@ -92,7 +92,7 @@ export function InvitePage() {
           </p>
           <Link
             to={`/signin?next=/invite/${code}`}
-            className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
+            className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-accent-text transition-colors hover:bg-accent-strong"
           >
             Sign in to join
           </Link>

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { YouTubePlayer } from '@/components/workspace/YouTubePlayer';
 import { ConversationPanel } from '@/components/room/ConversationPanel';
+import { VideoSlot } from '@/components/room/VideoSlot';
 import { Button } from '@/components/ui/Button';
 import { fetchRoomDashboard, updateRoomMissionSecure, leaveRoomSecure, createRoomInviteSecure } from '@/lib/rooms';
 import type { RoomDashboard, PlaylistItemMeta } from '@/lib/rooms';
@@ -43,6 +44,19 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const POSITION_SAMPLE_MS = 5000;
 const MAX_FOCUS_SECONDS = 86400;
 const YT_VIDEO_RE = /^[A-Za-z0-9_-]{6,20}$/;
+
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(
+    typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)').matches : true
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isDesktop;
+}
 
 interface RoomPageProps {
   profile: StudentProfile;
@@ -87,6 +101,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
   const [showMission, setShowMission] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
 
   const playerRef = useRef<YTPlayer | null>(null);
   const sessionRef = useRef(session);
@@ -520,7 +535,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
             </p>
             <Link
               to="/rooms"
-              className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
+              className="mt-5 flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-accent-text transition-colors hover:bg-accent-strong"
             >
               Back to my rooms
             </Link>
@@ -641,6 +656,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
       onStateChange={handleStateChange}
       onError={handlePlayerError}
       onReady={() => setPlayerError(null)}
+      className="h-full w-full overflow-hidden rounded-2xl border border-line bg-ink shadow-sm"
     />
   ) : null;
 
@@ -714,19 +730,17 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
       <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(340px,38%)]">
         {/* Left: video + info + focus */}
         <div className="flex min-h-0 min-w-0 flex-col">
-          <div className="flex min-h-0 flex-1 items-center justify-center p-3">
-            {playerBlock ? (
-              <div className="relative w-full" style={{ aspectRatio: '16 / 9', maxHeight: '100%' }}>
-                {playerBlock}
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 py-10 text-center">
-                <Link2 className="mx-auto h-8 w-8 text-ink-faint" aria-hidden />
-                <p className="mt-3 text-sm font-medium text-ink">No lesson linked</p>
-                <p className="mt-1 text-sm text-ink-soft">The owner can link one from a saved lesson.</p>
+          <VideoSlot className="min-h-0 flex-1 p-3">
+            {playerBlock ?? (
+              <div className="flex h-full w-full items-center justify-center">
+                <div className="rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 py-10 text-center">
+                  <Link2 className="mx-auto h-8 w-8 text-ink-faint" aria-hidden />
+                  <p className="mt-3 text-sm font-medium text-ink">No lesson linked</p>
+                  <p className="mt-1 text-sm text-ink-soft">The owner can link one from a saved lesson.</p>
+                </div>
               </div>
             )}
-          </div>
+          </VideoSlot>
 
           <div className="shrink-0 border-t border-line px-4 py-2.5">
             <div className="flex items-start justify-between gap-3">
@@ -800,13 +814,15 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
 
       {/* ===== Mobile: stacked workspace with tabs ===== */}
       <div className="flex min-h-0 flex-1 flex-col lg:hidden">
-        {/* Video: fixed 16:9, stays mounted */}
-        <div className="shrink-0">
-          {playerBlock ?? (
-            <div className="flex aspect-video items-center justify-center rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 text-center">
-              <p className="text-sm text-ink-soft">No lesson linked</p>
-            </div>
-          )}
+        {/* Video: 16:9, stays mounted */}
+        <div className="shrink-0 p-2">
+          <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
+            {playerBlock ?? (
+              <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-line-strong bg-raised/60 text-center">
+                <p className="text-sm text-ink-soft">No lesson linked</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Compact focus bar */}

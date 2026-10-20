@@ -238,7 +238,7 @@ export function ExamResultsPage({ profile, attemptId }: ExamResultsPageProps) {
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
           to="/papers"
-          className="flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-strong"
+          className="flex min-h-touch items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-accent-text transition-colors hover:bg-accent-strong"
         >
           Back to papers
         </Link>

@@ -19,6 +19,7 @@ export default {
         accent: 'var(--accent)',
         'accent-strong': 'var(--accent-strong)',
         'accent-soft': 'var(--accent-soft)',
+        'accent-text': 'var(--accent-text)',
       },
       minHeight: {
         touch: '44px',
