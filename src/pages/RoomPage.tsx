@@ -45,19 +45,6 @@ const POSITION_SAMPLE_MS = 5000;
 const MAX_FOCUS_SECONDS = 86400;
 const YT_VIDEO_RE = /^[A-Za-z0-9_-]{6,20}$/;
 
-function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(
-    typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)').matches : true
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 1024px)');
-    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-  return isDesktop;
-}
-
 interface RoomPageProps {
   profile: StudentProfile;
   roomId: string;
@@ -101,8 +88,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
   const [showMission, setShowMission] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const navigate = useNavigate();
-  const isDesktop = useIsDesktop();
-
   const playerRef = useRef<YTPlayer | null>(null);
   const sessionRef = useRef(session);
   const positionRef = useRef({ seconds: 0, videoId: null as string | null });
@@ -647,19 +632,6 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
     </aside>
   ) : null;
 
-  const playerBlock = lesson ? (
-    <YouTubePlayer
-      videoId={playerVideoId}
-      autoplay={false}
-      startSeconds={startSeconds}
-      watchUrl={watchUrl}
-      onStateChange={handleStateChange}
-      onError={handlePlayerError}
-      onReady={() => setPlayerError(null)}
-      className="h-full w-full overflow-hidden rounded-2xl border border-line bg-ink shadow-sm"
-    />
-  ) : null;
-
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-surface">
       {/* ===== Compact room toolbar ===== */}
@@ -726,14 +698,25 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
         </div>
       </header>
 
-      {/* ===== Desktop: one-screen split workspace ===== */}
-      <div className="hidden min-h-0 flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(340px,38%)]">
-        {/* Left: video + info + focus */}
-        <div className="flex min-h-0 min-w-0 flex-col">
-          <VideoSlot className="min-h-0 flex-1 p-3">
-            {playerBlock ?? (
-              <div className="flex h-full w-full items-center justify-center">
-                <div className="rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 py-10 text-center">
+      {/* ===== Unified workspace grid (single persistent player mount) ===== */}
+      <div className="grid min-h-0 flex-1 grid-rows-[auto_auto_1fr] lg:grid-cols-[minmax(0,1fr)_minmax(340px,38%)] lg:grid-rows-[minmax(0,1fr)_auto]">
+        {/* Player — single persistent mount, never remounts across breakpoints */}
+        <div className="relative aspect-video p-2 lg:col-start-1 lg:row-start-1 lg:aspect-auto lg:flex lg:items-center lg:justify-center lg:p-3">
+          <VideoSlot className="h-full w-full">
+            {lesson ? (
+              <YouTubePlayer
+                videoId={playerVideoId}
+                autoplay={false}
+                startSeconds={startSeconds}
+                watchUrl={watchUrl}
+                onStateChange={handleStateChange}
+                onError={handlePlayerError}
+                onReady={() => setPlayerError(null)}
+                className="h-full w-full overflow-hidden rounded-2xl border border-line bg-ink shadow-sm"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-line-strong bg-raised/60 px-6 py-10 text-center">
+                <div>
                   <Link2 className="mx-auto h-8 w-8 text-ink-faint" aria-hidden />
                   <p className="mt-3 text-sm font-medium text-ink">No lesson linked</p>
                   <p className="mt-1 text-sm text-ink-soft">The owner can link one from a saved lesson.</p>
@@ -741,101 +724,50 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
               </div>
             )}
           </VideoSlot>
+        </div>
 
-          <div className="shrink-0 border-t border-line px-4 py-2.5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h2 className="truncate font-display text-sm font-bold text-ink">
-                  {isPlaylist && currentIndex >= 0
-                    ? playlistItems![currentIndex].title ?? displayTitle
-                    : displayTitle}
-                </h2>
-                {currentChannel && (
-                  <p className="truncate text-xs text-ink-soft">{currentChannel}</p>
-                )}
-              </div>
-              <a
-                href={watchUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex min-h-touch shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
-              >
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-                YouTube
-              </a>
+        {/* Controls bar — responsive, row 2 col 1 */}
+        <div className="shrink-0 border-t border-line px-3 py-2 lg:col-start-1 lg:row-start-2 lg:px-4 lg:py-2.5">
+          {/* Title row — desktop only */}
+          <div className="hidden lg:flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="truncate font-display text-sm font-bold text-ink">
+                {isPlaylist && currentIndex >= 0
+                  ? playlistItems![currentIndex].title ?? displayTitle
+                  : displayTitle}
+              </h2>
+              {currentChannel && (
+                <p className="truncate text-xs text-ink-soft">{currentChannel}</p>
+              )}
             </div>
-            <div className="mt-2.5 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft">
-                  <Clock className="h-4 w-4 text-accent-strong" aria-hidden />
-                </div>
-                <div>
-                  <p className="font-display text-lg font-bold tabular-nums leading-none text-ink">
-                    {formatDuration(focusSeconds)}
-                  </p>
-                  <p className="text-[10px] text-ink-faint">{timerNote}</p>
-                </div>
+            <a
+              href={watchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-touch shrink-0 items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+            >
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+              YouTube
+            </a>
+          </div>
+
+          {/* Focus bar — responsive */}
+          <div className="flex items-center justify-between gap-2 lg:mt-2.5 lg:gap-3">
+            <div className="flex items-center gap-2 lg:gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft">
+                <Clock className="h-4 w-4 text-accent-strong" aria-hidden />
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] tabular-nums text-ink-faint">
-                  {formatDuration(positionSeconds)}
-                </span>
-                {counting && !playbackUnavailable ? (
-                  <Button variant="secondary" onClick={pauseSession} className="!px-3 !py-1.5 text-xs">
-                    <Pause className="h-3.5 w-3.5" aria-hidden />
-                    Pause
-                  </Button>
-                ) : !playbackUnavailable ? (
-                  <Button variant="primary" onClick={startSession} className="!px-3 !py-1.5 text-xs">
-                    <Play className="h-3.5 w-3.5" aria-hidden />
-                    {session.phase === 'paused' ? 'Resume' : 'Start'}
-                  </Button>
-                ) : null}
+              <div>
+                <p className="font-display text-base font-bold tabular-nums leading-none text-ink lg:text-lg">
+                  {formatDuration(focusSeconds)}
+                </p>
+                <p className="text-[10px] text-ink-faint">{timerNote}</p>
               </div>
             </div>
-            {playerError && (
-              <p className="mt-2 text-xs text-ink-soft" role="alert">{playerError}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Right: shared AI chat */}
-        <div className="min-h-0 border-l border-line">
-          <ConversationPanel
-            roomId={roomId}
-            profile={profile}
-            roomReady={true}
-            currentVideoTitle={currentVideoTitle}
-            currentVideoId={playerVideoId}
-            fillHeight
-          />
-        </div>
-      </div>
-
-      {/* ===== Mobile: stacked workspace with tabs ===== */}
-      <div className="flex min-h-0 flex-1 flex-col lg:hidden">
-        {/* Video: 16:9, stays mounted */}
-        <div className="shrink-0 p-2">
-          <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
-            {playerBlock ?? (
-              <div className="flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-line-strong bg-raised/60 text-center">
-                <p className="text-sm text-ink-soft">No lesson linked</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Compact focus bar */}
-        <div className="shrink-0 border-b border-line px-3 py-2">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-ink-soft" aria-hidden />
-              <span className="font-display text-base font-bold tabular-nums text-ink">
-                {formatDuration(focusSeconds)}
+            <div className="flex items-center gap-1.5 lg:gap-2">
+              <span className="text-[10px] tabular-nums text-ink-faint">
+                {formatDuration(positionSeconds)}
               </span>
-              <span className="text-[10px] text-ink-faint">{timerNote}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
               {counting && !playbackUnavailable ? (
                 <Button variant="secondary" onClick={pauseSession} className="!px-3 !py-1.5 text-xs">
                   <Pause className="h-3.5 w-3.5" aria-hidden />
@@ -850,26 +782,27 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
             </div>
           </div>
           {playerError && (
-            <p className="mt-1.5 text-xs text-ink-soft" role="alert">{playerError}</p>
+            <p className="mt-1.5 lg:mt-2 text-xs text-ink-soft" role="alert">{playerError}</p>
           )}
         </div>
 
-        {/* Tabbed panels: AI / Playlist */}
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="flex shrink-0 border-b border-line bg-raised p-1" role="tablist" aria-label="Room panels">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mobileTab === 'chat'}
-              onClick={() => setMobileTab('chat')}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                mobileTab === 'chat' ? 'bg-accent-soft text-accent-strong' : 'text-ink-soft'
-              }`}
-            >
-              <MessageSquare className="h-4 w-4" aria-hidden />
-              AI
-            </button>
-            {isPlaylist && (
+        {/* Panels — row 3 on mobile, col 2 spanning both rows on desktop */}
+        <div className="flex min-h-0 flex-col border-t border-line lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:border-t-0 lg:border-l lg:border-line">
+          {/* Mobile tab buttons */}
+          {isPlaylist && (
+            <div className="flex shrink-0 border-b border-line bg-raised p-1 lg:hidden" role="tablist" aria-label="Room panels">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mobileTab === 'chat'}
+                onClick={() => setMobileTab('chat')}
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  mobileTab === 'chat' ? 'bg-accent-soft text-accent-strong' : 'text-ink-soft'
+                }`}
+              >
+                <MessageSquare className="h-4 w-4" aria-hidden />
+                AI
+              </button>
               <button
                 type="button"
                 role="tab"
@@ -882,12 +815,21 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
                 <ListVideo className="h-4 w-4" aria-hidden />
                 Playlist
               </button>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Panel content — both always mounted, visibility via CSS */}
           <div className="min-h-0 flex-1 overflow-hidden">
-            {mobileTab === 'playlist' && isPlaylist ? (
-              <div className="h-full border border-line bg-raised shadow-sm">{playlistPanel}</div>
-            ) : (
+            {isPlaylist && (
+              <div className={`h-full border border-line bg-raised shadow-sm ${
+                mobileTab === 'playlist' ? 'block' : 'hidden'
+              } lg:hidden`}>
+                {playlistPanel}
+              </div>
+            )}
+            <div className={`h-full ${
+              isPlaylist && mobileTab === 'playlist' ? 'hidden lg:block' : 'block'
+            }`}>
               <ConversationPanel
                 roomId={roomId}
                 profile={profile}
@@ -896,7 +838,7 @@ export function RoomPage({ profile, roomId }: RoomPageProps) {
                 currentVideoId={playerVideoId}
                 fillHeight
               />
-            )}
+            </div>
           </div>
         </div>
       </div>
