@@ -97,7 +97,7 @@ export function MissionCompleteCard({
                     {set?.label ?? mission.topicSlug}
                   </span>
                   {result && result.total && (result.correct ?? 0) / result.total >= PASS_THRESHOLD && (
-                    <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-[11px] font-medium text-green-700">
+                    <span className="rounded-full border border-line bg-raised px-2.5 py-0.5 text-[11px] font-semibold text-ink">
                       Passed (≥{Math.round(PASS_THRESHOLD * 100)}%)
                     </span>
                   )}
@@ -168,12 +168,12 @@ export function MissionCompleteCard({
               </li>
             </ul>
             {result?.status === 'criteria_not_met' && (
-              <p className="mt-4 rounded-xl bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800" role="alert">
+              <p className="mt-4 rounded-xl border border-line bg-sunken px-3.5 py-2.5 text-sm text-ink-soft" role="alert">
                 {result.reason}
               </p>
             )}
             {result?.status === 'error' && (
-              <p className="mt-4 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+              <p className="mt-4 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
                 Something went wrong. Please try again.
               </p>
             )}

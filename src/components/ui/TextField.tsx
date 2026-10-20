@@ -23,12 +23,12 @@ export function TextField({ label, error, id, ...rest }: TextFieldProps) {
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
         className={`w-full rounded-xl border bg-raised px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint transition-colors focus:outline-none focus:ring-2 focus:ring-accent/40 ${
-          error ? 'border-red-400' : 'border-line focus:border-accent'
+          error ? 'border-ink' : 'border-line focus:border-accent'
         }`}
         {...rest}
       />
       {error && (
-        <p id={errorId} className="text-xs text-red-600" role="alert">
+        <p id={errorId} className="text-xs font-medium text-ink" role="alert">
           {error}
         </p>
       )}

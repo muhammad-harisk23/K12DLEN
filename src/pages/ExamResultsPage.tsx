@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   AlertCircle,
   ArrowLeft,
@@ -85,7 +85,7 @@ export function ExamResultsPage({ profile, attemptId }: ExamResultsPageProps) {
           {isFinished ? (
             <CheckCircle2 className="h-6 w-6 text-accent" aria-hidden />
           ) : (
-            <Clock className="h-6 w-6 text-amber-600" aria-hidden />
+            <Clock className="h-6 w-6 text-ink-soft" aria-hidden />
           )}
           <h1 className="font-display text-xl font-bold text-ink sm:text-2xl">{exam.title}</h1>
         </div>
@@ -110,7 +110,7 @@ export function ExamResultsPage({ profile, attemptId }: ExamResultsPageProps) {
           <p className="text-xs text-ink-faint">Gradeable total</p>
         </div>
         <div className="rounded-xl border border-line bg-raised p-3 text-center">
-          <p className={`font-display text-2xl font-bold ${ungradedCount > 0 ? 'text-amber-600' : 'text-ink'}`}>
+          <p className={`font-display text-2xl font-bold ${ungradedCount > 0 ? 'text-ink-soft' : 'text-ink'}`}>
             {ungradedCount}
           </p>
           <p className="text-xs text-ink-faint">Ungraded</p>
@@ -173,12 +173,12 @@ export function ExamResultsPage({ profile, attemptId }: ExamResultsPageProps) {
                       </span>
                     )}
                     {isGraded && !isCorrect && (
-                      <span className="flex items-center gap-0.5 text-xs font-medium text-red-600">
+                      <span className="flex items-center gap-0.5 text-xs font-medium text-ink">
                         <XCircle className="h-3.5 w-3.5" /> Incorrect
                       </span>
                     )}
                     {!isGraded && wasAnswered && (
-                      <span className="flex items-center gap-0.5 text-xs font-medium text-amber-600">
+                      <span className="flex items-center gap-0.5 text-xs font-medium text-ink-soft">
                         <MinusCircle className="h-3.5 w-3.5" /> Ungraded
                       </span>
                     )}
@@ -201,14 +201,14 @@ export function ExamResultsPage({ profile, attemptId }: ExamResultsPageProps) {
                           key={i}
                           className={`flex items-start gap-2 rounded-lg px-2.5 py-1.5 text-sm ${
                             isCorrectOpt ? 'bg-accent-soft/50 text-accent-strong' :
-                            isSelected && !isCorrectOpt && isGraded ? 'bg-red-50 text-red-700' :
+                            isSelected && !isCorrectOpt && isGraded ? 'bg-sunken text-ink' :
                             isSelected ? 'bg-sunken text-ink' : 'text-ink-soft'
                           }`}
                         >
                           <span className="font-medium">{String.fromCharCode(65 + i)})</span>
                           <span>{opt}</span>
                           {isCorrectOpt && <CheckCircle2 className="ml-auto h-4 w-4 text-accent" />}
-                          {isSelected && !isCorrectOpt && isGraded && <XCircle className="ml-auto h-4 w-4 text-red-500" />}
+                          {isSelected && !isCorrectOpt && isGraded && <XCircle className="ml-auto h-4 w-4 text-ink" />}
                         </li>
                       );
                     })}

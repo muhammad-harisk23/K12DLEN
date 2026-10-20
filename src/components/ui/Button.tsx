@@ -24,7 +24,7 @@ const variantClasses: Record<Variant, string> = {
   ghost:
     'bg-transparent text-ink-soft hover:bg-sunken hover:text-ink focus-visible:outline-accent',
   danger:
-    'bg-red-600 text-white hover:bg-red-700 focus-visible:outline-red-600',
+    'bg-ink text-white hover:bg-ink-soft border border-line-strong focus-visible:outline-ink',
 };
 
 export function Button({

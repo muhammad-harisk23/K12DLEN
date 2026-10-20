@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
-  CheckCircle2,
+  Check,
+  Clock,
   Flame,
   History,
   Library,
@@ -20,6 +21,7 @@ import { TextField } from '@/components/ui/TextField';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { WeeklyConsistency } from '@/components/ui/WeeklyConsistency';
 import { DailyGoalEditor } from '@/components/ui/DailyGoalEditor';
+import { TiltCard } from '@/components/ui/TiltCard';
 import { BadgeArtwork } from '@/components/practice/BadgeArtwork';
 import { supabase } from '@/lib/supabase';
 import { formatDuration, parseYouTubeUrl } from '@/lib/youtube';
@@ -235,33 +237,35 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
       {needsOnboarding && (
         <button
           onClick={() => navigate('/library')}
-          className="mb-6 w-full rounded-2xl border border-accent/30 bg-accent-soft/50 px-4 py-3 text-left text-sm text-accent-strong transition-colors hover:bg-accent-soft"
+          className="mb-6 w-full rounded-2xl border border-line bg-sunken/60 px-4 py-3 text-left text-sm text-ink-soft transition-colors hover:bg-sunken"
         >
           Optional: pick a curriculum pathway in the library — or just bring your own lesson below.
         </button>
       )}
 
-      <section className="mb-7">
-        <p className="text-sm font-medium text-accent">Your progress</p>
-        <h1 className="mt-1 font-display text-2xl font-bold text-ink sm:text-3xl">
-          Hi, {profile.display_name}. Let&apos;s make today count.
+      {/* ===== A. Personalized opening ===== */}
+      <section className="mb-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-faint">Your study home</p>
+        <h1 className="mt-2 font-display text-3xl font-extrabold leading-tight text-ink sm:text-4xl">
+          Hi, {profile.display_name}.
         </h1>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-soft">
-          Real practice, real results. Every question you answer is graded
-          honestly and counted toward your daily commitment.
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-soft sm:text-base">
+          {activeMission
+            ? 'You have a mission in progress. Pick up where you stopped.'
+            : 'Start a mission or bring a lesson — every question is graded honestly and counts toward your day.'}
         </p>
       </section>
 
-      {/* ===== 1. HERO: today's mission + daily commitment ring ===== */}
+      {/* ===== B. Continue learning — featured surface ===== */}
       <section
-        aria-label="Today's progress"
-        className="overflow-hidden rounded-3xl border border-line bg-raised shadow-sm"
+        aria-label="Today's mission"
+        className="overflow-hidden rounded-3xl border border-line bg-raised shadow-card"
       >
         <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div className="min-w-0">
             {activeMission ? (
               <>
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-strong">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
                   Continue your mission
                 </p>
                 <h2 className="mt-2 font-display text-xl font-bold leading-snug text-ink sm:text-2xl">
@@ -287,7 +291,7 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
               </>
             ) : (
               <>
-                <p className="text-xs font-semibold uppercase tracking-wide text-accent-strong">
+                <p className="text-xs font-semibold uppercase tracking-wide text-ink-faint">
                   Start a mission
                 </p>
                 <h2 className="mt-2 font-display text-xl font-bold leading-snug text-ink sm:text-2xl">
@@ -310,7 +314,7 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
             )}
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl bg-sunken/50 p-5 lg:p-6">
+          <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-line bg-sunken/40 p-5 lg:p-6">
             {progressLoading ? (
               <div className="h-[132px] w-[132px] animate-pulse rounded-full bg-sunken" aria-hidden />
             ) : (
@@ -322,20 +326,20 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
                 <span className="text-xs text-ink-soft">of {todayGoal}</span>
               </ProgressRing>
             )}
-            <div className="flex items-center gap-2 text-xs">
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
               {todayMet ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-1 font-medium text-green-700">
-                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+                <span className="inline-flex items-center gap-1 rounded-full border border-line-strong bg-raised px-2.5 py-1 font-medium text-ink">
+                  <Check className="h-3.5 w-3.5" aria-hidden />
                   Goal met
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-1 font-medium text-accent-strong">
+                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-raised px-2.5 py-1 font-medium text-ink-soft">
                   <Target className="h-3.5 w-3.5" aria-hidden />
                   In progress
                 </span>
               )}
               {progress && progress.streak > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 font-medium text-amber-700">
+                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-raised px-2.5 py-1 font-medium text-ink">
                   <Flame className="h-3.5 w-3.5" aria-hidden />
                   {progress.streak}d streak
                 </span>
@@ -352,11 +356,11 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         </div>
       </section>
 
-      {/* ===== 2. Quick start: BYOL ===== */}
-      <section aria-label="Bring your own lesson" className="mt-6 rounded-2xl border border-accent/25 bg-raised p-5 shadow-sm sm:p-6">
+      {/* ===== C. Bring your own lesson ===== */}
+      <section aria-label="Bring your own lesson" className="mt-6 rounded-2xl border border-line bg-raised p-5 shadow-card sm:p-6">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white">
-            <Link2 className="h-4.5 w-4.5" aria-hidden />
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-sunken text-ink">
+            <Link2 className="h-4 w-4" aria-hidden />
           </span>
           <div>
             <h2 className="font-display text-lg font-bold text-ink">Bring your own lesson</h2>
@@ -390,7 +394,7 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         </form>
       </section>
 
-      {/* ===== 3. Learning outcomes grid ===== */}
+      {/* ===== D. Learning outcomes grid ===== */}
       <section aria-label="Your learning outcomes" className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <OutcomeCard
           label="Active missions"
@@ -400,7 +404,7 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         <OutcomeCard
           label="Missions completed"
           value={progressLoading ? null : progress?.practice.missionsCompleted ?? 0}
-          icon={<CheckCircle2 className="h-4 w-4" aria-hidden />}
+          icon={<Check className="h-4 w-4" aria-hidden />}
         />
         <OutcomeCard
           label="Completed practice attempts"
@@ -410,18 +414,18 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         <OutcomeCard
           label="Questions answered correctly"
           value={progressLoading ? null : progress?.practice.correct ?? 0}
-          icon={<CheckCircle2 className="h-4 w-4" aria-hidden />}
+          icon={<Check className="h-4 w-4" aria-hidden />}
         />
       </section>
 
-      {/* ===== 3b. Your Achievements ===== */}
-      <section aria-label="Your achievements" className="mt-6 rounded-2xl border border-line bg-raised p-5 shadow-sm sm:p-6">
+      {/* ===== E. Your Achievements — 3D tilt cards ===== */}
+      <section aria-label="Your achievements" className="mt-6 rounded-2xl border border-line bg-raised p-5 shadow-card sm:p-6">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-soft">
-            <Trophy className="h-4.5 w-4.5 text-accent-strong" aria-hidden />
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-sunken text-ink">
+            <Trophy className="h-4 w-4" aria-hidden />
           </span>
           <div className="flex-1">
-            <h2 className="font-display text-lg font-bold text-ink">Your Achievements</h2>
+            <h2 className="font-display text-lg font-bold text-ink">Your achievements</h2>
             <p className="text-xs text-ink-soft">
               {achievements
                 ? `${achievements.earnedCount} of ${achievements.badges.length} earned — badges are awarded for real, server-verified progress.`
@@ -433,34 +437,37 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
           {achievements ? (
             achievements.badges.map((badge) => (
-              <div
+              <TiltCard
                 key={badge.slug}
-                className={`flex flex-col items-center rounded-2xl border p-5 text-center transition-all ${
+                disabled={!badge.earned}
+                className={`flex flex-col items-center rounded-2xl border p-5 text-center ${
                   badge.earned
-                    ? 'border-accent/30 bg-gradient-to-br from-accent-soft/30 to-raised'
-                    : 'border-line bg-sunken/40'
+                    ? 'border-line bg-gradient-to-br from-sunken/60 to-raised shadow-card'
+                    : 'border-line bg-sunken/30'
                 }`}
               >
-                <BadgeArtwork slug={badge.slug} earned={badge.earned} size={88} />
-                <p className="mt-3 font-display text-sm font-bold text-ink">{badge.name}</p>
-                <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">{badge.description}</p>
-                {badge.earned ? (
-                  badge.earnedAt && (
-                    <p className="mt-2 text-[11px] font-medium text-accent-strong">
-                      Earned {new Date(badge.earnedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                <div className="tilt-card-inner flex flex-col items-center">
+                  <BadgeArtwork slug={badge.slug} earned={badge.earned} size={88} />
+                  <p className="mt-3 font-display text-sm font-bold text-ink">{badge.name}</p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">{badge.description}</p>
+                  {badge.earned ? (
+                    badge.earnedAt && (
+                      <p className="mt-2 text-[11px] font-medium text-ink-soft">
+                        Earned {new Date(badge.earnedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    )
+                  ) : (
+                    <p className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-ink-faint">
+                      <Lock className="h-3 w-3" aria-hidden />
+                      Locked
                     </p>
-                  )
-                ) : (
-                  <p className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-ink-faint">
-                    <Lock className="h-3 w-3" aria-hidden />
-                    Locked
-                  </p>
-                )}
-              </div>
+                  )}
+                </div>
+              </TiltCard>
             ))
           ) : (
             skeletonArray(3).map((i) => (
-              <div key={i} className="flex flex-col items-center rounded-2xl border border-line bg-sunken/40 p-5">
+              <div key={i} className="flex flex-col items-center rounded-2xl border border-line bg-sunken/30 p-5">
                 <div className="h-[88px] w-[88px] animate-pulse rounded-2xl bg-sunken" />
                 <div className="mt-3 h-3 w-20 animate-pulse rounded bg-sunken" />
                 <div className="mt-2 h-2 w-28 animate-pulse rounded bg-sunken" />
@@ -470,15 +477,15 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         </div>
 
         {achievements && achievements.earnedCount === 0 && (
-          <p className="mt-4 rounded-xl bg-sunken/60 px-4 py-3 text-xs leading-relaxed text-ink-soft">
+          <p className="mt-4 rounded-xl border border-line bg-sunken/50 px-4 py-3 text-xs leading-relaxed text-ink-soft">
             New here? Complete your first validated mission or finish a practice attempt to earn your first badge. Every badge reflects genuine, server-graded progress — nothing is awarded for just opening the app.
           </p>
         )}
       </section>
 
-      {/* ===== 4. Today's accuracy + recent activity ===== */}
+      {/* ===== F. Today + weekly consistency ===== */}
       <section className="mt-6 grid gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border border-line bg-raised p-5 shadow-sm lg:col-span-1">
+        <div className="rounded-2xl border border-line bg-raised p-5 shadow-card lg:col-span-1">
           <h3 className="font-display text-sm font-bold text-ink">Today</h3>
           {progressLoading ? (
             <div className="mt-3 space-y-2">
@@ -486,9 +493,19 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
               <div className="h-4 w-1/2 animate-pulse rounded bg-sunken" />
             </div>
           ) : todayAnswered === 0 ? (
-            <p className="mt-3 text-sm text-ink-soft">
-              No practice yet today. Answer your first question to start counting.
-            </p>
+            <div className="mt-3">
+              <p className="text-sm text-ink-soft">
+                No practice yet today. Answer your first question to start counting.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/practice')}
+                className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-ink-soft"
+              >
+                Start practicing
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
           ) : (
             <dl className="mt-3 space-y-2 text-sm">
               <div className="flex justify-between">
@@ -516,8 +533,7 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
           </p>
         </div>
 
-        {/* 5. Weekly consistency */}
-        <div className="rounded-2xl border border-line bg-raised p-5 shadow-sm lg:col-span-2">
+        <div className="rounded-2xl border border-line bg-raised p-5 shadow-card lg:col-span-2">
           <div className="flex items-center justify-between">
             <h3 className="font-display text-sm font-bold text-ink">14-day consistency</h3>
             {!progressLoading && progress && (
@@ -549,7 +565,7 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         </div>
       </section>
 
-      {/* ===== 6. Resume lessons ===== */}
+      {/* ===== Resume lessons ===== */}
       {hasResources && (
         <section aria-label="Your lessons" className="mt-8">
           <h2 className="font-display text-base font-bold text-ink">Resume learning</h2>
@@ -559,15 +575,16 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
                 <button
                   type="button"
                   onClick={() => navigate(`/study/${r.id}`)}
-                  className="w-full rounded-2xl border border-line bg-raised p-4 pr-11 text-left shadow-sm transition-all hover:border-accent/40 hover:shadow-md"
+                  className="w-full rounded-2xl border border-line bg-raised p-4 pr-11 text-left shadow-card transition-all hover:border-line-strong hover:shadow-lifted"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent-strong">
+                    <span className="rounded-full border border-line bg-sunken px-2 py-0.5 text-[11px] font-medium text-ink-soft">
                       {r.source_type === 'video' ? 'Video' : 'Playlist'}
                     </span>
                     {r.study_sessions && r.study_sessions[0] && r.study_sessions[0].focus_seconds > 0 && (
-                      <span className="text-[11px] text-ink-faint">
-                        {formatDuration(r.study_sessions[0].focus_seconds)} focused
+                      <span className="inline-flex items-center gap-1 text-[11px] text-ink-faint">
+                        <Clock className="h-3 w-3" aria-hidden />
+                        {formatDuration(r.study_sessions[0].focus_seconds)}
                       </span>
                     )}
                   </div>
@@ -581,7 +598,7 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
                 <button
                   type="button"
                   onClick={() => void handleRemove(r.id)}
-                  className="absolute right-3 top-3 rounded-lg p-1.5 text-ink-faint opacity-0 transition-opacity hover:bg-sunken hover:text-red-600 focus-visible:opacity-100 group-hover:opacity-100"
+                  className="absolute right-3 top-3 rounded-lg p-1.5 text-ink-faint opacity-0 transition-opacity hover:bg-sunken hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
                   aria-label="Remove this lesson"
                   title="Remove"
                 >
@@ -593,28 +610,28 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         </section>
       )}
 
-      {/* ===== 7. Discovery ===== */}
+      {/* ===== Discovery ===== */}
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <button
           type="button"
           onClick={() => navigate('/library')}
-          className="group flex flex-col rounded-2xl border border-line bg-raised p-6 text-left shadow-sm transition-all hover:border-accent/40 hover:shadow-md"
+          className="group flex flex-col rounded-2xl border border-line bg-raised p-6 text-left shadow-card transition-all hover:border-line-strong hover:shadow-lifted"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent-strong">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-sunken text-ink">
             <Library className="h-5 w-5" aria-hidden />
           </span>
           <h2 className="mt-4 font-display text-lg font-bold text-ink">Explore curated learning paths</h2>
           <p className="mt-1.5 flex-1 text-sm leading-relaxed text-ink-soft">
             Classes 9-12 for Indian boards — CBSE, ICSE/ISC and UP Board — with verified chapters marked honestly.
           </p>
-          <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent">
+          <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-ink">
             Open library
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </span>
         </button>
 
-        <div className="flex flex-col rounded-2xl border border-line bg-raised p-6 shadow-sm">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent-strong">
+        <div className="flex flex-col rounded-2xl border border-line bg-raised p-6 shadow-card">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-sunken text-ink">
             <Users className="h-5 w-5" aria-hidden />
           </span>
           <h2 className="mt-4 font-display text-lg font-bold text-ink">Study rooms</h2>
@@ -624,7 +641,7 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
           <button
             type="button"
             onClick={() => navigate('/rooms')}
-            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent-strong"
+            className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-ink hover:text-ink-soft"
           >
             Open study rooms
             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -632,8 +649,8 @@ export function DashboardPage({ profile, subjects }: DashboardProps) {
         </div>
       </div>
 
-      {/* ===== 8. Genuine history ===== */}
-      <section className="mt-8 rounded-2xl border border-line bg-raised p-6 shadow-sm">
+      {/* ===== Genuine history ===== */}
+      <section className="mt-8 rounded-2xl border border-line bg-raised p-6 shadow-card">
         <h2 className="flex items-center gap-2 font-display text-base font-bold text-ink">
           <History className="h-4 w-4 text-ink-faint" aria-hidden />
           Your study activity
@@ -696,7 +713,7 @@ function OutcomeCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-raised p-5 shadow-sm transition-all hover:shadow-md">
+    <div className="rounded-2xl border border-line bg-raised p-5 shadow-card transition-all hover:shadow-lifted">
       <div className="flex items-center gap-2 text-ink-faint">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sunken">{icon}</span>
         <span className="text-[11px] font-medium uppercase tracking-wide">{label}</span>
@@ -723,7 +740,7 @@ function DailyGoalEditorInlineLink({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs font-medium text-accent hover:text-accent-strong"
+        className="text-xs font-medium text-ink-soft hover:text-ink"
       >
         Adjust goal
       </button>

@@ -173,7 +173,7 @@ export function AchievementSharePanel({ data, onClose }: AchievementSharePanelPr
                   style={{ maxWidth: '100%' }}
                 />
               ) : (
-                <div className="flex h-[200px] w-[112px] items-center justify-center text-xs text-red-600 sm:h-[240px] sm:w-[135px]">
+                <div className="flex h-[200px] w-[112px] items-center justify-center text-xs text-ink-soft sm:h-[240px] sm:w-[135px]">
                   Preview unavailable
                 </div>
               )}
@@ -181,7 +181,7 @@ export function AchievementSharePanel({ data, onClose }: AchievementSharePanelPr
           </div>
 
           {error && (
-            <p className="mt-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+            <p className="mt-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
               {error}
             </p>
           )}

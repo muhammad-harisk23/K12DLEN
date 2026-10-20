@@ -14,14 +14,14 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
       <div className="relative flex flex-col justify-between overflow-hidden bg-ink px-6 py-8 text-white sm:px-10 lg:w-2/5 lg:py-14">
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
+          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/5 blur-3xl"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-accent/10 blur-3xl"
+          className="pointer-events-none absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-white/5 blur-3xl"
         />
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-ink">
             <BookOpenText className="h-5 w-5" aria-hidden />
           </span>
           <span className="font-display text-lg font-bold tracking-tight">
@@ -34,15 +34,15 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
             <br />
             Study with friends.
             <br />
-            <span className="text-teal-300">Actually make progress.</span>
+            <span className="text-white">Actually make progress.</span>
           </p>
           <p className="mt-4 text-sm leading-relaxed text-white/70">
-            A calm, curriculum-aware workspace for Class 10 — built around your
+            A calm, focused study workspace — built around your
             goals, your playlist, and honest progress.
           </p>
         </div>
         <p className="mt-10 text-xs text-white/50 lg:mt-0">
-          Made for Indian Class 10 students · CBSE · ICSE · UP Board
+          Study together, learn better.
         </p>
       </div>
 

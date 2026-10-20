@@ -231,7 +231,7 @@ export function YouTubePlayer({
       <div className="relative w-full" style={{ aspectRatio: '16 / 9' }}>
         {status === 'error' ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 px-6 py-8 text-center">
-            <AlertTriangle className="h-8 w-8 text-amber-400" aria-hidden />
+            <AlertTriangle className="h-8 w-8 text-white/60" aria-hidden />
             <p className="max-w-md text-sm leading-relaxed text-white/90">
               {errorMessage}
             </p>

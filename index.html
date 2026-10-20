@@ -4,13 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>K12Learn2Gether — Study together, learn better</title>
-    <meta name="description" content="A calm, curriculum-aware study workspace for Class 10 students. Learn together with shared AI study rooms." />
+    <meta name="description" content="A calm, focused study workspace for students. Bring your YouTube lessons into one place, study in private rooms with shared academic AI, practice honestly, and see real progress." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // No-flash theme bootstrap: apply before first paint.
+      (function () {
+        try {
+          var stored = localStorage.getItem('k12-theme');
+          var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.style.colorScheme = theme;
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
     <meta property="og:image" content="https://bolt.new/static/og_default.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://bolt.new/static/og_default.png">

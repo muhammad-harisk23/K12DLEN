@@ -17,22 +17,22 @@ interface BadgeArtworkProps {
 export function BadgeArtwork({ slug, earned, size = 96 }: BadgeArtworkProps) {
   const palette = earned
     ? {
-        primary: '#0d9488',
-        strong: '#0f766e',
-        soft: '#ccfbf1',
-        ink: '#1f2937',
-        inkSoft: '#4b5563',
+        primary: '#111111',
+        strong: '#000000',
+        soft: '#f4f4f4',
+        ink: '#111111',
+        inkSoft: '#525252',
         surface: '#ffffff',
-        border: '#e6dfd3',
+        border: '#e5e5e5',
       }
     : {
-        primary: '#d4cab8',
-        strong: '#d4cab8',
-        soft: '#f1ece3',
-        ink: '#8b8478',
-        inkSoft: '#a8a094',
-        surface: '#f1ece3',
-        border: '#e6dfd3',
+        primary: '#d4d4d4',
+        strong: '#d4d4d4',
+        soft: '#f4f4f4',
+        ink: '#a3a3a3',
+        inkSoft: '#b8b8b8',
+        surface: '#f4f4f4',
+        border: '#e5e5e5',
       };
 
   return (
@@ -52,8 +52,8 @@ export function BadgeArtwork({ slug, earned, size = 96 }: BadgeArtworkProps) {
         </linearGradient>
         <linearGradient id={`badge-shine-${slug}-${earned}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor={earned ? '#ffffff' : '#e6dfd3'} stopOpacity="0.6" />
-          <stop offset="50%" stopColor={earned ? '#ccfbf1' : '#f1ece3'} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={earned ? '#0f766e' : '#d4cab8'} stopOpacity="0.1" />
+          <stop offset="50%" stopColor={earned ? '#f4f4f4' : '#f4f4f4'} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={earned ? '#000000' : '#d4d4d4'} stopOpacity="0.1" />
         </linearGradient>
         {earned && (
           <linearGradient id={`badge-highlight-${slug}`} x1="0" y1="0" x2="1" y2="0">

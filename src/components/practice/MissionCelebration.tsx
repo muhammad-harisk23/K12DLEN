@@ -152,7 +152,7 @@ export function MissionCelebration({
                 </span>
               )}
               {passed && (
-                <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700">
+                <span className="rounded-full border border-line bg-raised px-3 py-1 text-xs font-medium text-ink">
                   Passed (≥{Math.round(PASS_THRESHOLD * 100)}%)
                 </span>
               )}
@@ -181,7 +181,7 @@ export function MissionCelebration({
           {unlockedBadges.length > 0 && (
             <div className="celebration-stage-c mt-6 rounded-2xl border border-accent/30 bg-accent-soft/30 p-5">
               <p className="flex items-center justify-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-accent-strong">
-                <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                <Sparkles className="h-3.5 w-3.5 text-ink-soft" aria-hidden />
                 {unlockedBadges.length === 1 ? 'New badge unlocked' : `${unlockedBadges.length} new badges unlocked`}
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-4">

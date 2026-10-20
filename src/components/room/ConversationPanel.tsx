@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bot, ChevronUp, MessageCircleQuestion, Sparkles, User } from 'lucide-react';
+import { ChevronUp, MessageCircleQuestion, MessageSquareText, User } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { RoomTutorError, askRoomTutor, fetchOlderTutorMessages, fetchTutorMessages } from '@/lib/roomTutor';
 import {
@@ -215,23 +215,23 @@ export function ConversationPanel({
   return (
     <section
       aria-label="Shared tutor conversation"
-      className={`flex flex-col rounded-2xl border border-accent/25 bg-raised shadow-sm ${fillHeight ? 'h-full min-h-0' : ''}`}
+      className={`flex flex-col rounded-2xl border border-line bg-raised shadow-sm ${fillHeight ? 'h-full min-h-0' : ''}`}
     >
       <header className="flex items-center justify-between gap-3 border-b border-line px-5 py-3.5">
         <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
-          <Sparkles className="h-4 w-4 text-accent" aria-hidden />
-          Shared tutor
+          <MessageSquareText className="h-4 w-4 text-ink-soft" aria-hidden />
+          Shared study assistant
         </h2>
         {offlineNotice && (
-          <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-800">
+          <span className="rounded-full border border-line-strong bg-sunken px-2.5 py-1 text-[11px] font-medium text-ink-soft">
             Reconnecting…
           </span>
         )}
       </header>
 
       {currentVideoTitle && (
-        <p className="flex items-center gap-1.5 border-b border-line/60 bg-accent-soft/40 px-4 py-2 text-[11px] leading-snug text-accent-strong">
-          <Sparkles className="h-3 w-3 shrink-0" aria-hidden />
+        <p className="flex items-center gap-1.5 border-b border-line/60 bg-sunken/60 px-4 py-2 text-[11px] leading-snug text-ink-soft">
+          <MessageSquareText className="h-3 w-3 shrink-0" aria-hidden />
           <span className="truncate">Asking about: {currentVideoTitle}</span>
         </p>
       )}
@@ -252,10 +252,10 @@ export function ConversationPanel({
 
         {feed.length === 0 && !generating && (
           <div className="px-4 py-8 text-center">
-            <Bot className="mx-auto h-8 w-8 text-ink-faint" aria-hidden />
+            <MessageSquareText className="mx-auto h-8 w-8 text-ink-faint" aria-hidden />
             <p className="mt-2 text-sm font-medium text-ink">No questions yet</p>
             <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-ink-soft">
-              Ask anything about this lesson — the tutor answers for the whole room, and everyone learns from it.
+              Ask anything about this lesson — the assistant answers for the whole room, and everyone learns from it.
             </p>
           </div>
         )}
@@ -263,15 +263,15 @@ export function ConversationPanel({
         {feed.map((item, idx) =>
           'pendingOf' in item ? (
             <div key={item.pendingOf.requestId} className="flex justify-end">
-              <div className="max-w-[85%] rounded-2xl rounded-br-md bg-accent-soft px-3.5 py-2.5 text-sm leading-relaxed text-accent-strong">
+              <div className="max-w-[85%] rounded-2xl rounded-br-md bg-sunken px-3.5 py-2.5 text-sm leading-relaxed text-ink">
                 <p className="whitespace-pre-wrap break-words">{item.pendingOf.body}</p>
-                <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-accent">
+                <p className="mt-1.5 flex items-center gap-1.5 text-[11px] font-medium text-ink-soft">
                   <span className="inline-flex gap-0.5">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent [animation-delay:150ms]" />
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent [animation-delay:300ms]" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ink-soft" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ink-soft [animation-delay:150ms]" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ink-soft [animation-delay:300ms]" />
                   </span>
-                  Checking with the tutor…
+                  Checking with the assistant…
                 </p>
               </div>
             </div>
@@ -296,12 +296,12 @@ export function ConversationPanel({
       {(notice || submitError) && (
         <div className="px-5 pb-1">
           {notice && (
-            <p className="rounded-xl bg-amber-50 px-3.5 py-2.5 text-xs leading-relaxed text-amber-800" role="status">
+            <p className="rounded-xl border border-line bg-sunken px-3.5 py-2.5 text-xs leading-relaxed text-ink-soft" role="status">
               {notice}
             </p>
           )}
           {submitError && (
-            <p className="mt-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-xs leading-relaxed text-red-700" role="alert">
+            <p className="mt-2 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-xs leading-relaxed text-ink" role="alert">
               {submitError}
             </p>
           )}
@@ -323,7 +323,7 @@ export function ConversationPanel({
           className="w-full resize-none rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm leading-relaxed text-ink placeholder:text-ink-faint focus:border-accent focus:outline-none"
         />
         <div className="mt-2 flex items-center justify-between gap-3">
-          <span className={`text-[11px] tabular-nums ${remaining < 60 ? 'text-amber-700' : 'text-ink-faint'}`}>
+          <span className={`text-[11px] tabular-nums ${remaining < 60 ? 'text-ink-soft' : 'text-ink-faint'}`}>
             {remaining < 60 ? `${remaining} characters left` : 'Be specific — answers are shared with the room'}
           </span>
           <Button type="submit" disabled={!draft.trim() || generating} loading={generating}>
@@ -347,7 +347,7 @@ function ConversationEntry({ message, mine }: { message: TutorMessage; mine: boo
         <div className={`max-w-[85%] ${mine ? 'order-first' : ''}`}>
           <div
             className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
-              mine ? 'rounded-br-md bg-accent text-white' : 'rounded-bl-md bg-sunken text-ink'
+              mine ? 'rounded-br-md bg-ink text-white' : 'rounded-bl-md bg-sunken text-ink'
             }`}
           >
             <p className="whitespace-pre-wrap break-words">{message.body}</p>
@@ -355,7 +355,7 @@ function ConversationEntry({ message, mine }: { message: TutorMessage; mine: boo
           <p className={`mt-1 text-[11px] text-ink-faint ${mine ? 'text-right' : ''}`}>{mine ? 'You asked' : 'Classmate asked'}</p>
         </div>
         {mine && (
-          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
+          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sunken text-ink-soft">
             <User className="h-3.5 w-3.5" aria-hidden />
           </span>
         )}
@@ -364,14 +364,14 @@ function ConversationEntry({ message, mine }: { message: TutorMessage; mine: boo
   }
   return (
     <div className="flex gap-2.5">
-      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-strong">
-        <Bot className="h-3.5 w-3.5" aria-hidden />
+      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sunken text-ink-soft">
+        <MessageSquareText className="h-3.5 w-3.5" aria-hidden />
       </span>
       <div className="min-w-0 max-w-[85%]">
-        <div className="rounded-2xl rounded-bl-md border border-accent/20 bg-white px-3.5 py-2.5 text-sm leading-relaxed text-ink shadow-sm">
+        <div className="rounded-2xl rounded-bl-md border border-line bg-raised px-3.5 py-2.5 text-sm leading-relaxed text-ink shadow-sm">
           <p className="whitespace-pre-wrap break-words">{message.body}</p>
         </div>
-        <p className="mt-1 text-[11px] text-ink-faint">Study tutor</p>
+        <p className="mt-1 text-[11px] text-ink-faint">Study assistant</p>
       </div>
     </div>
   );

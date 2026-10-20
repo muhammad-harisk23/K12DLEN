@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   AlertCircle,
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -10,7 +9,6 @@ import {
   Loader2,
   Send,
   CheckCircle2,
-  XCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import {
@@ -20,7 +18,7 @@ import {
   submitPaperExam,
   formatDuration,
 } from '@/lib/paperExam';
-import type { AttemptBundle, ExamQuestionSnapshot, ExamAnswer, AttemptStatus } from '@/lib/paperExam';
+import type { AttemptBundle } from '@/lib/paperExam';
 import { ExamError } from '@/lib/paperExam';
 import type { StudentProfile } from '@/types/curriculum';
 
@@ -35,19 +33,6 @@ type LoadState =
   | { status: 'ready'; bundle: AttemptBundle };
 
 type AnswerMap = Record<string, { selectedIndex: number | null; answerText: string; marked: boolean }>;
-
-function parseAnswerKey(key: string | null, options: string[] | null): number | null {
-  if (!key || !options) return null;
-  if (/^[0-9]+$/.test(key)) {
-    const idx = parseInt(key, 10);
-    return idx >= 0 && idx < options.length ? idx : null;
-  }
-  if (/^[A-Da-d]$/.test(key)) {
-    const idx = key.toUpperCase().charCodeAt(0) - 65;
-    return idx >= 0 && idx < options.length ? idx : null;
-  }
-  return null;
-}
 
 export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
   void profile;
@@ -112,7 +97,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
   // Auto-submit on expiry (client-side trigger; server is authoritative)
   useEffect(() => {
     if (remainingSeconds === 0 && !submitting && !isFinished) {
-      void handleSubmit(true);
+      void handleSubmit();
     }
   }, [remainingSeconds]);
 
@@ -153,7 +138,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
     scheduleSave(qid);
   }
 
-  async function handleSubmit(isExpiry = false) {
+  async function handleSubmit() {
     if (!bundle || submitting || isFinished) return;
     setSubmitting(true);
     setError(null);
@@ -180,7 +165,6 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
       setSubmitting(false);
     }
   }
-
   if (load.status === 'loading') {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -241,7 +225,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
         </div>
         {remainingSeconds != null && (
           <div className={`flex items-center gap-1.5 rounded-xl px-3 py-2 font-mono text-sm font-bold tabular-nums ${
-            remainingSeconds <= 30 ? 'bg-red-50 text-red-700' : remainingSeconds <= 60 ? 'bg-amber-50 text-amber-800' : 'bg-accent-soft text-accent-strong'
+            remainingSeconds <= 30 ? 'border border-line-strong bg-sunken text-ink' : remainingSeconds <= 60 ? 'border border-line bg-sunken text-ink-soft' : 'bg-sunken text-ink'
           }`}>
             <Clock className="h-4 w-4" aria-hidden />
             {formatDuration(remainingSeconds)}
@@ -250,7 +234,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
       </div>
 
       {error && (
-        <p className="mb-3 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700" role="alert">
+        <p className="mb-3 rounded-xl border border-line-strong bg-sunken px-3.5 py-2.5 text-sm font-medium text-ink" role="alert">
           {error}
           {saving && <span className="ml-2 text-ink-faint">· Saving answer…</span>}
         </p>
@@ -277,7 +261,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
                   type="button"
                   onClick={() => updateAnswer(currentQ.id, { marked: !answers[currentQ.id]?.marked })}
                   className={`flex min-h-touch items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                    answers[currentQ.id]?.marked ? 'bg-amber-100 text-amber-800' : 'text-ink-faint hover:bg-sunken'
+                    answers[currentQ.id]?.marked ? 'bg-sunken text-ink-soft' : 'text-ink-faint hover:bg-sunken'
                   }`}
                 >
                   <Flag className="h-3.5 w-3.5" aria-hidden />
@@ -286,7 +270,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
               </div>
 
               {currentQ.has_figure && (
-                <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                <p className="mt-3 rounded-lg border border-line bg-sunken px-3 py-2 text-xs text-ink-soft">
                   {currentQ.figure_note ?? 'This question references a figure.'}
                 </p>
               )}
@@ -429,7 +413,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
                     className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-semibold transition-colors ${
                       isCurrent ? 'ring-2 ring-accent ring-offset-1' : ''
                     } ${
-                      isMarked ? 'bg-amber-100 text-amber-800' :
+                      isMarked ? 'bg-sunken text-ink-soft' :
                       isAnswered ? 'bg-accent-soft text-accent-strong' :
                       'bg-sunken text-ink-faint'
                     }`}
@@ -442,7 +426,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
             </div>
             <div className="mt-3 space-y-1 text-[11px] text-ink-faint">
               <p className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-accent-soft" /> Answered</p>
-              <p className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-amber-100" /> Marked</p>
+              <p className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded border border-line bg-sunken" /> Marked</p>
               <p className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-sunken" /> Not answered</p>
             </div>
             <Button
@@ -472,7 +456,7 @@ export function ExamRunnerPage({ profile, examId }: ExamRunnerPageProps) {
               <Button variant="secondary" className="flex-1" onClick={() => setShowSubmitConfirm(false)}>
                 Keep going
               </Button>
-              <Button variant="primary" className="flex-1" loading={submitting} onClick={() => void handleSubmit(false)}>
+              <Button variant="primary" className="flex-1" loading={submitting} onClick={() => void handleSubmit()}>
                 Submit
               </Button>
             </div>

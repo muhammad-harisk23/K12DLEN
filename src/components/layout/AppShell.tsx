@@ -1,7 +1,9 @@
 import { NavLink } from 'react-router-dom';
 import type { ReactNode } from 'react';
-import { BookOpenText, FileText, LayoutDashboard, Library, LogOut, PencilLine } from 'lucide-react';
+import { BookOpenText, FileText, LayoutDashboard, Library, LogOut, Menu, PencilLine, X } from 'lucide-react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import type { StudentProfile } from '@/types/curriculum';
 
 interface AppShellProps {
@@ -19,21 +21,23 @@ const navItems = [
 export function AppShell({ profile, children }: AppShellProps) {
   const { signOut, user } = useAuth();
   void profile;
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-surface">
-      <header className="sticky top-0 z-20 border-b border-line bg-surface/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-white">
-              <BookOpenText className="h-4.5 w-4.5" aria-hidden />
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-white">
+              <BookOpenText className="h-4 w-4" aria-hidden />
             </span>
             <span className="font-display text-base font-bold tracking-tight text-ink">
               K12Learn2Gether
             </span>
           </div>
 
-          <nav className="flex items-center gap-1" aria-label="Main">
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
             {navItems.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
@@ -41,15 +45,17 @@ export function AppShell({ profile, children }: AppShellProps) {
                 className={({ isActive }) =>
                   `flex min-h-touch items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-accent-soft text-accent-strong'
-                      : 'text-ink-soft hover:bg-sunken hover:text-ink'
+                      ? 'bg-sunken text-ink'
+                      : 'text-ink-soft hover:bg-sunken/60 hover:text-ink'
                   }`
                 }
               >
                 <Icon className="h-4 w-4" aria-hidden />
-                <span className="hidden sm:inline">{label}</span>
+                <span>{label}</span>
               </NavLink>
             ))}
+            <div className="mx-1 h-5 w-px bg-line" aria-hidden />
+            <ThemeToggle />
             <button
               type="button"
               onClick={() => void signOut()}
@@ -60,7 +66,59 @@ export function AppShell({ profile, children }: AppShellProps) {
               <span className="sr-only">Sign out</span>
             </button>
           </nav>
+
+          {/* Mobile controls */}
+          <div className="flex items-center gap-1 md:hidden">
+            <ThemeToggle />
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileOpen}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-raised text-ink-soft transition-colors hover:text-ink"
+            >
+              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile nav drawer */}
+        {mobileOpen && (
+          <nav className="border-t border-line bg-surface md:hidden" aria-label="Mobile">
+            <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6">
+              <ul className="space-y-1">
+                {navItems.map(({ to, label, icon: Icon }) => (
+                  <li key={to}>
+                    <NavLink
+                      to={to}
+                      onClick={() => setMobileOpen(false)}
+                      className={({ isActive }) =>
+                        `flex min-h-touch items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                          isActive
+                            ? 'bg-sunken text-ink'
+                            : 'text-ink-soft hover:bg-sunken/60 hover:text-ink'
+                        }`
+                      }
+                    >
+                      <Icon className="h-4 w-4" aria-hidden />
+                      {label}
+                    </NavLink>
+                  </li>
+                ))}
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => { setMobileOpen(false); void signOut(); }}
+                    className="flex min-h-touch w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:bg-sunken hover:text-ink"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden />
+                    Sign out
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        )}
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
