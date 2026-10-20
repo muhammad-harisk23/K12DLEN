@@ -84,7 +84,7 @@ export function SignUpPage() {
         </Button>
         <p className="text-center text-sm text-ink-soft">
           Already studying with us?{' '}
-          <Link to="/signin" className="font-medium text-accent hover:text-accent-strong">
+          <Link to="/signin" className="font-semibold text-ink hover:underline">
             Sign in
           </Link>
         </p>

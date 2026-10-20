@@ -71,7 +71,7 @@ export function SignInPage() {
         </Button>
         <p className="text-center text-sm text-ink-soft">
           New here?{' '}
-          <Link to="/signup" className="font-medium text-accent hover:text-accent-strong">
+          <Link to="/signup" className="font-semibold text-ink hover:underline">
             Create an account
           </Link>
         </p>
